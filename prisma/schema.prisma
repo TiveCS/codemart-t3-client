@@ -14,10 +14,47 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model Product {
+    id          String  @id @default(cuid())
+    title       String
+    description String?
+    price       Int     @default(0)
+
+    cover_url String?
+    contents  ProductContent[]
+
+    owner   User   @relation(fields: [ownerId], references: [id])
+    ownerId String
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    purchases PurchaseHistory[]
+}
+
+model ProductContent {
+    id       String  @id @default(cuid())
+    body     String?
+    version  String
+    code_url String
+
+    product   Product @relation(fields: [productId], references: [id])
+    productId String
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+}
+
+model PurchaseHistory {
+    id        String @id @default(cuid())
+    price     Int
+    productId String
+    userId    String
+
+    product Product @relation(fields: [productId], references: [id])
+    owner   User    @relation(fields: [userId], references: [id])
+
+    created_at DateTime @default(now())
 }
 
 // Necessary for Next auth
@@ -48,13 +85,15 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String            @id @default(cuid())
     name          String?
-    email         String?   @unique
+    email         String?           @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
+    products      Product[]
+    purchases     PurchaseHistory[]
 }
 
 model VerificationToken {
