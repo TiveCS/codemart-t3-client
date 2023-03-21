@@ -1,3 +1,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .btn {
+    @apply w-full px-6 py-2 text-sm font-medium lg:text-base;
+  }
+
+  .btn-primary {
+    @apply rounded-md bg-codemart-600 text-white hover:bg-codemart-700;
+  }
+
+  .btn-outline {
+    @apply rounded-md border border-codemart-600 text-codemart-600 hover:border-transparent hover:bg-codemart-700 hover:text-white;
+  }
+
+  .btn-text {
+    @apply rounded-md text-gray-900 hover:text-codemart-700;
+  }
+}
+
+@layer base {
+  html,
+  body {
+    @apply min-h-screen bg-gray-50;
+  }
+}
