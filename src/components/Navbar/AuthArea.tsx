@@ -9,7 +9,7 @@ const AuthArea: React.FC = () => {
 
   return (
     <div className="flex flex-row items-center justify-end">
-      {status !== "authenticated" && (
+      {status === "unauthenticated" && (
         <>
           <Link href={"/auth"}>
             <Button style={"primary"}>Join Now</Button>
@@ -20,12 +20,16 @@ const AuthArea: React.FC = () => {
       <div className="hidden gap-x-4 md:flex">
         {status === "authenticated" && (
           <>
-            <p className="hidden items-center font-medium md:flex">
+            <p
+              id="user-name"
+              className="hidden items-center font-medium md:flex"
+            >
               {session.user.name}
             </p>
 
             {session.user.image && (
               <Image
+                id="user-avatar"
                 src={session.user.image}
                 alt={""}
                 width={48}
@@ -37,7 +41,9 @@ const AuthArea: React.FC = () => {
         )}
       </div>
 
-      <Bars3Icon className="h-6 w-6 text-gray-500 md:hidden" />
+      {status === "authenticated" && (
+        <Bars3Icon className="h-6 w-6 text-gray-500 md:hidden" />
+      )}
     </div>
   );
 };

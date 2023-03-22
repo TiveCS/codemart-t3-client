@@ -1,14 +1,16 @@
-import { type ChangeEvent, useState } from "react";
+import { useState, type ChangeEvent } from "react";
 
-export default function useInput(
-  defaultValue = ""
-): [string, (e: ChangeEvent<HTMLInputElement>) => void] {
-  const [value, setValue] = useState(defaultValue);
+function useInput<T>(
+  defaultValue: T
+): [T, (e: ChangeEvent<HTMLInputElement>) => void] {
+  const [value, setValue] = useState<T>(defaultValue);
 
   function onValueChangeHandler(e: ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
-    setValue(e.target.value);
+    setValue(e.target.value as unknown as T);
   }
 
   return [value, onValueChangeHandler];
 }
+
+export default useInput;

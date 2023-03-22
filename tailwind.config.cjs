@@ -15,6 +15,23 @@ const config = {
         "codemart-800": "#1262D6",
         "codemart-900": "#1742B7",
       },
+      maxWidth: {
+        "2xs": "16rem",
+        "3xs": "12rem",
+        "4xs": "10rem",
+        us: "8rem",
+      },
+      minWidth: {
+        "2xs": "16rem",
+        "3xs": "12rem",
+        "4xs": "10rem",
+        us: "8rem",
+      },
+      screens: {
+        "mobile-sm": "320px",
+        "mobile-md": "375px",
+        "mobile-lg": "425px",
+      },
     },
   },
   plugins: [],

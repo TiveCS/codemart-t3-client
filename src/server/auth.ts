@@ -45,6 +45,9 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
+    jwt(params) {
+      return params.token;
+    },
   },
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -66,6 +69,9 @@ export const authOptions: NextAuthOptions = {
      * @see https://next-auth.js.org/providers/github
      */
   ],
+  pages: {
+    signIn: "/auth",
+  },
 };
 
 /**
