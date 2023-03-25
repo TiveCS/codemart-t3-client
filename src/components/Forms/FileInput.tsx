@@ -1,4 +1,4 @@
-import { type ChangeEvent, type InputHTMLAttributes } from "react";
+import { type FormEvent, type InputHTMLAttributes } from "react";
 
 interface FileInputProps {
   className?: string;
@@ -6,8 +6,10 @@ interface FileInputProps {
   id?: string;
   placeholder?: string;
   label?: string;
-  onChangeHandler: (event: ChangeEvent<HTMLInputElement>) => void;
+  onChangeHandler: (event: FormEvent<HTMLInputElement>) => void | Promise<void>;
   accept?: InputHTMLAttributes<HTMLInputElement>["accept"];
+  required?: boolean;
+  multiple?: boolean;
 }
 
 const FileInput: React.FC<FileInputProps> = ({
@@ -18,10 +20,12 @@ const FileInput: React.FC<FileInputProps> = ({
   label,
   onChangeHandler,
   accept,
+  required = false,
+  multiple = false,
 }) => {
-  function handleChange(event: ChangeEvent<HTMLInputElement>) {
+  function handleChange(event: FormEvent<HTMLInputElement>) {
     event.preventDefault();
-    onChangeHandler(event);
+    void onChangeHandler(event);
   }
 
   return (
@@ -38,6 +42,8 @@ const FileInput: React.FC<FileInputProps> = ({
           placeholder={placeholder}
           onChange={handleChange}
           accept={accept}
+          required={required}
+          multiple={multiple}
         />
       </div>
     </>

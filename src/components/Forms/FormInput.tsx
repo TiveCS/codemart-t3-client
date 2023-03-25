@@ -9,6 +9,7 @@ interface FormInputProps {
   className?: string;
   value?: string | number | readonly string[];
   onChangeHandler: (e: ChangeEvent<HTMLInputElement>) => void;
+  required?: boolean;
 }
 
 const FormInput: React.FC<FormInputProps> = ({
@@ -20,6 +21,7 @@ const FormInput: React.FC<FormInputProps> = ({
   className = "",
   value,
   onChangeHandler,
+  required = false,
 }) => {
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     event.preventDefault();
@@ -39,6 +41,7 @@ const FormInput: React.FC<FormInputProps> = ({
         placeholder={placeholder}
         onChange={handleChange}
         value={value}
+        required={required}
       />
     </div>
   );

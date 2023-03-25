@@ -21,5 +21,9 @@ const config = {
   images: {
     domains: ["cdn.discordapp.com", "lh3.googleusercontent.com"],
   },
+  webpack: (config) => {
+    config.resolve.fallback = { fs: false };
+    return config;
+  },
 };
 export default config;
