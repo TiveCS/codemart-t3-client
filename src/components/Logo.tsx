@@ -1,5 +1,5 @@
 import Link from "next/link";
-import LogoNoText from "./svg/LogoNoText";
+import LogoNoText from "./Images/LogoNoText";
 
 const Logo: React.FC = () => {
   return (

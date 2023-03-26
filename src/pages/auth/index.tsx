@@ -1,7 +1,9 @@
-import { type NextPage } from "next";
+import { type GetServerSideProps, type NextPage } from "next";
+import { getServerSession } from "next-auth";
 import { signIn } from "next-auth/react";
 import Head from "next/head";
 import { Button } from "~/components/Button";
+import { authOptions } from "~/server/auth";
 
 const AuthPage: NextPage = () => {
   return (
@@ -31,3 +33,20 @@ const AuthPage: NextPage = () => {
 };
 
 export default AuthPage;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getServerSession(context.req, context.res, authOptions);
+
+  if (session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+};

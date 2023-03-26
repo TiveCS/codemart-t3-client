@@ -17,7 +17,7 @@ const AuthArea: React.FC = () => {
         </>
       )}
 
-      <div className="hidden gap-x-4 md:flex">
+      <div className="hidden gap-x-4 lg:flex">
         {status === "authenticated" && (
           <>
             <p
@@ -42,7 +42,7 @@ const AuthArea: React.FC = () => {
       </div>
 
       {status === "authenticated" && (
-        <Bars3Icon className="h-6 w-6 text-gray-500 md:hidden" />
+        <Bars3Icon className="h-6 w-6 text-gray-500 lg:hidden" />
       )}
     </div>
   );

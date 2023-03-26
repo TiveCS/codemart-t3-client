@@ -8,7 +8,7 @@
   }
 
   .btn-primary {
-    @apply rounded-md bg-codemart-600 text-white hover:bg-codemart-700;
+    @apply rounded-md bg-codemart-600 text-white hover:bg-codemart-700 disabled:cursor-not-allowed disabled:bg-codemart-300;
   }
 
   .btn-outline {
@@ -17,6 +17,34 @@
 
   .btn-text {
     @apply rounded-md text-gray-900 hover:text-codemart-700;
+  }
+
+  .toast {
+    @apply z-50 inline-flex w-full max-w-xs items-center justify-between rounded-md px-4 py-4 shadow;
+  }
+
+  .toast-normal {
+    @apply bg-white text-gray-900;
+  }
+
+  .toast-success {
+    @apply bg-emerald-500 text-white;
+  }
+
+  .toast-danger {
+    @apply bg-rose-600 text-white;
+  }
+
+  .toast-normal #toast-close {
+    @apply hover:bg-gray-100;
+  }
+
+  .toast-success #toast-close {
+    @apply hover:bg-emerald-400;
+  }
+
+  .toast-danger #toast-close {
+    @apply hover:bg-rose-400;
   }
 }
 
