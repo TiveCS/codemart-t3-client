@@ -15,6 +15,14 @@ const config = {
         "codemart-800": "#1262D6",
         "codemart-900": "#1742B7",
       },
+      minHeight: {
+        sm: "24rem",
+        xs: "20rem",
+        "2xs": "16rem",
+        "3xs": "12rem",
+        "4xs": "10rem",
+        us: "8rem",
+      },
       maxWidth: {
         "2xs": "16rem",
         "3xs": "12rem",
@@ -22,6 +30,7 @@ const config = {
         us: "8rem",
       },
       minWidth: {
+        xs: "20rem",
         "2xs": "16rem",
         "3xs": "12rem",
         "4xs": "10rem",

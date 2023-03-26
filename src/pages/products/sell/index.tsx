@@ -1,15 +1,21 @@
-import { type NextPage } from "next";
-import { useSession } from "next-auth/react";
+import * as DOMPurify from "dompurify";
+import { GetServerSideProps, type NextPage } from "next";
+import { getServerSession } from "next-auth";
 import Head from "next/head";
-import { type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { Button } from "~/components/Button";
 import FileInput from "~/components/Forms/FileInput";
 import FormInput from "~/components/Forms/FormInput";
+import TextAreaInput from "~/components/Forms/TextAreaInput";
 import useFileInputEncoded from "~/hooks/useFileInputEncoded";
 import useInput from "~/hooks/useInput";
+import { authOptions } from "~/server/auth";
 import { api } from "~/utils/api";
+import useToastsStore from "~/zustand/toastsStore";
 
 const SellPage: NextPage = () => {
+  const addToast = useToastsStore.getState().addToast;
+
   const publish = api.products.publish.useMutation();
 
   const [title, onTitleChangeHandler] = useInput("");
@@ -19,18 +25,33 @@ const SellPage: NextPage = () => {
   const [codeFile, onCodeFileChangeHandler] = useFileInputEncoded({
     chunkSize: 1024 * 1024 * 2.5,
   });
+  const [body, onBodyChangeHandler] = useInput("");
+
+  const [isPublishing, setIsPublishing] = useState(false);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!codeFile) return;
 
-    publish.mutate({
+    setIsPublishing(true);
+
+    const mutate = publish.mutateAsync({
       title,
       description,
       codeFile,
       version,
       price: Number(price),
+      body: DOMPurify.sanitize(body),
+    });
+
+    mutate.finally(() => {
+      setIsPublishing(false);
+
+      addToast({
+        message: "Successfully publish a product",
+        variant: "success",
+      });
     });
   };
 
@@ -42,11 +63,11 @@ const SellPage: NextPage = () => {
       </Head>
       <>
         <form
-          className="flex flex-col"
+          className="flex flex-col md:px-6"
           onSubmit={handleSubmit}
           encType="multipart/form-data"
         >
-          <div className="grid w-full grid-flow-row gap-y-4">
+          <div className="grid w-full grid-flow-row gap-y-4 md:grid-flow-col md:gap-y-0 md:gap-x-8">
             <FormInput
               name="title"
               label="Title"
@@ -89,7 +110,16 @@ const SellPage: NextPage = () => {
             />
           </div>
 
-          <Button type="submit" className="mt-8">
+          <div className="mt-4">
+            <TextAreaInput
+              name="body"
+              label="Body"
+              placeholder="Explain your product here..."
+              onChangeHandler={onBodyChangeHandler}
+            />
+          </div>
+
+          <Button type="submit" className="mt-8" isLoading={isPublishing}>
             Publish
           </Button>
         </form>
@@ -99,3 +129,22 @@ const SellPage: NextPage = () => {
 };
 
 export default SellPage;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getServerSession(context.req, context.res, authOptions);
+
+  if (!session || !session.user) {
+    return {
+      redirect: {
+        destination: "/auth",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {
+      session,
+    },
+  };
+};
