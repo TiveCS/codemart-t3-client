@@ -24,7 +24,10 @@ const AuthPage: NextPage = () => {
           </div>
 
           <Button style="outline" onClick={() => signIn("google")}>
-            Sign Up with Google
+            Sign In with Google
+          </Button>
+          <Button style="outline" onClick={() => signIn("discord")}>
+            Sign In with Discord
           </Button>
         </div>
       </>

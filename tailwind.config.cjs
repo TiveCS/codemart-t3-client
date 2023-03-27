@@ -30,6 +30,8 @@ const config = {
         us: "8rem",
       },
       minWidth: {
+        lg: "32rem",
+        sm: "24rem",
         xs: "20rem",
         "2xs": "16rem",
         "3xs": "12rem",

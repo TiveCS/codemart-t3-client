@@ -24,8 +24,8 @@ const FileInput: React.FC<FileInputProps> = ({
   multiple = false,
 }) => {
   function handleChange(event: FormEvent<HTMLInputElement>) {
-    event.preventDefault();
     void onChangeHandler(event);
+    event.preventDefault();
   }
 
   return (

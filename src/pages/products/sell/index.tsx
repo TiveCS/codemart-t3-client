@@ -1,5 +1,5 @@
 import * as DOMPurify from "dompurify";
-import { GetServerSideProps, type NextPage } from "next";
+import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession } from "next-auth";
 import Head from "next/head";
 import { useState, type FormEvent } from "react";
@@ -24,6 +24,11 @@ const SellPage: NextPage = () => {
   const [price, onPriceChangeHandler] = useInput(0);
   const [codeFile, onCodeFileChangeHandler] = useFileInputEncoded({
     chunkSize: 1024 * 1024 * 2.5,
+    maxFileSize: 50,
+  });
+  const [coverImgFile, onCoverImgFileChangeHandler] = useFileInputEncoded({
+    chunkSize: 1024 * 1024 * 3,
+    maxFileSize: 1,
   });
   const [body, onBodyChangeHandler] = useInput("");
 
@@ -32,7 +37,7 @@ const SellPage: NextPage = () => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!codeFile) return;
+    if (!codeFile || !coverImgFile) return;
 
     setIsPublishing(true);
 
@@ -40,19 +45,29 @@ const SellPage: NextPage = () => {
       title,
       description,
       codeFile,
+      coverImgFile,
       version,
       price: Number(price),
       body: DOMPurify.sanitize(body),
     });
 
-    mutate.finally(() => {
-      setIsPublishing(false);
+    mutate
+      .catch(() => {
+        setIsPublishing(false);
 
-      addToast({
-        message: "Successfully publish a product",
-        variant: "success",
+        addToast({
+          message: "Failed to publish product",
+          variant: "danger",
+        });
+      })
+      .finally(() => {
+        setIsPublishing(false);
+
+        addToast({
+          message: "Successfully publish a product",
+          variant: "success",
+        });
       });
-    });
   };
 
   return (
@@ -73,6 +88,7 @@ const SellPage: NextPage = () => {
               label="Title"
               placeholder="My Awesome Software"
               onChangeHandler={onTitleChangeHandler}
+              required
             />
 
             <FormInput
@@ -91,6 +107,7 @@ const SellPage: NextPage = () => {
               onChangeHandler={onPriceChangeHandler}
               value={price}
               className="max-w-us mobile-md:max-w-4xs"
+              required
             />
 
             <FormInput
@@ -104,9 +121,17 @@ const SellPage: NextPage = () => {
 
           <div className="mt-4">
             <FileInput
+              name="cover_img_file"
+              label="Cover Image"
+              onChangeHandler={onCoverImgFileChangeHandler}
+              accept={"image/png,image/jpeg"}
+              required
+            />
+            <FileInput
               name="code_file"
               label="Source File"
               onChangeHandler={onCodeFileChangeHandler}
+              required
             />
           </div>
 
