@@ -1,6 +1,6 @@
 import { nanoid } from "nanoid";
 import { create } from "zustand";
-import { type ToastData } from "~/components/Toast";
+import { type ToastData } from "~/types";
 
 type NewToast = {
   message: string;

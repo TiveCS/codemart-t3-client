@@ -96,6 +96,7 @@ const SellPage: NextPage = () => {
               label="Description"
               placeholder="A software that manage your task"
               onChangeHandler={onDescriptionChangeHandler}
+              required
             />
           </div>
 
@@ -125,7 +126,6 @@ const SellPage: NextPage = () => {
               label="Cover Image"
               onChangeHandler={onCoverImgFileChangeHandler}
               accept={"image/png,image/jpeg"}
-              required
             />
             <FileInput
               name="code_file"

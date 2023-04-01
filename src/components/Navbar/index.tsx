@@ -5,7 +5,7 @@ import AuthArea from "./AuthArea";
 
 const Navbar: React.FC = () => {
   return (
-    <nav className="grid w-screen grid-flow-col grid-cols-3 px-6 py-6 shadow-md md:px-16">
+    <nav className="grid max-w-screen grid-flow-col grid-cols-3 px-6 py-6 shadow-md md:px-14">
       <div className="col-span-2 flex flex-row items-center gap-x-16">
         <Logo />
 
