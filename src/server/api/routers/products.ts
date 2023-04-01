@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { FileInputData } from "~/types";
+import { FileInputData, type ProductBrowseData } from "~/types";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const productsRouter = createTRPCRouter({
@@ -74,34 +74,38 @@ export const productsRouter = createTRPCRouter({
       z.object({
         take: z.number().min(1).nullish(),
         skip: z.number().min(0).nullish(),
+        cursorId: z.string().nullish(),
       })
     )
-    .mutation(async ({ input, ctx }) => {
+    .query(async ({ input, ctx }) => {
       const take = input.take || 6;
       const skip = input.skip || 0;
+      const cursorId = input.cursorId || undefined;
 
-      const products = await ctx.prisma.product.findMany({
-        take,
-        skip,
-        orderBy: {
-          updated_at: "desc",
-        },
-        select: {
-          id: true,
-          title: true,
-          price: true,
-          description: true,
-          cover_url: true,
-          owner: {
-            select: {
-              name: true,
+      const products: ProductBrowseData[] | undefined =
+        await ctx.prisma.product.findMany({
+          take,
+          skip,
+          cursor: cursorId ? { id: cursorId } : undefined,
+          orderBy: {
+            updated_at: "desc",
+          },
+          select: {
+            id: true,
+            title: true,
+            price: true,
+            description: true,
+            cover_url: true,
+            owner: {
+              select: {
+                name: true,
+              },
             },
           },
-        },
-      });
+        });
 
-      return {
-        products,
-      };
+      const nextCursor = products[products.length - 1]?.id;
+
+      return { products, nextCursor };
     }),
 });

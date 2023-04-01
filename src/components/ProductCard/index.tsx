@@ -17,6 +17,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <div
+      key={product.id}
+      id={product.id}
       className={`${className}  min-w-2xs rounded-md bg-white shadow mobile-lg:min-w-xs`}
     >
       <div className="relative h-56 w-full">
@@ -24,6 +26,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           src={product.cover_url ?? NoImageCover}
           alt={product.title}
           className="rounded-t-md bg-gray-400 sm:max-w-xs md:min-w-xs"
+          sizes="(max-width: 768px) 14rem"
           fill
           priority
         />
