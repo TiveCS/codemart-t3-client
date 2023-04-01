@@ -28,6 +28,10 @@ const config = {
         "3xs": "12rem",
         "4xs": "10rem",
         us: "8rem",
+        "2us": "6rem",
+        "3us": "4rem",
+        "4us": "2rem",
+        screen: "100vw",
       },
       minWidth: {
         lg: "32rem",

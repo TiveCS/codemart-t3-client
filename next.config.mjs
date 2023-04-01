@@ -19,7 +19,11 @@ const config = {
     defaultLocale: "en",
   },
   images: {
-    domains: ["cdn.discordapp.com", "lh3.googleusercontent.com"],
+    domains: [
+      "cdn.discordapp.com",
+      "lh3.googleusercontent.com",
+      "is3.cloudhost.id",
+    ],
   },
   webpack: (config) => {
     config.resolve.fallback = { fs: false };

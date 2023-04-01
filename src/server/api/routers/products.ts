@@ -1,5 +1,5 @@
-import { FileInputData } from "~/hooks/useFileInputEncoded";
 import { z } from "zod";
+import { FileInputData, type ProductBrowseData } from "~/types";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const productsRouter = createTRPCRouter({
@@ -28,14 +28,22 @@ export const productsRouter = createTRPCRouter({
         coverImgFile,
       } = input;
 
-      const uploadResult = await s3.putObject(codeFile, {});
-      const codeUrl = await s3.presignedUrl(uploadResult.key, 60 * 60 * 24 * 7);
+      const [codeUploadResult, coverImgUploadResult] = await Promise.all([
+        s3.putObject(codeFile, {}),
+        s3.putObject(coverImgFile, {}),
+      ]);
+
+      const [codeUrl, coverImgUrl] = await Promise.all([
+        s3.presignedUrl(codeUploadResult.key, 60 * 60 * 24 * 7),
+        s3.presignedUrl(coverImgUploadResult.key, 60 * 60 * 24 * 7),
+      ]);
 
       const product = await prisma.product.create({
         data: {
           title,
           description,
           price,
+          cover_url: coverImgUrl,
           owner: {
             connect: {
               id: session.user.id,
@@ -64,29 +72,40 @@ export const productsRouter = createTRPCRouter({
   getProductsForBrowse: publicProcedure
     .input(
       z.object({
-        take: z.number().min(1).optional().default(6),
-        skip: z.number().min(0).optional().default(0),
-        cursorId: z.string().optional(),
+        take: z.number().min(1).nullish(),
+        skip: z.number().min(0).nullish(),
+        cursorId: z.string().nullish(),
       })
     )
     .query(async ({ input, ctx }) => {
-      const products = await ctx.prisma.product.findMany({
-        cursor: {
-          id: input.cursorId,
-        },
-        take: input.take,
-        skip: input.skip,
-        orderBy: {
-          updated_at: "desc",
-        },
-        select: {
-          id: true,
-          title: true,
-          price: true,
-          description: true,
-        },
-      });
+      const take = input.take || 6;
+      const skip = input.skip || 0;
+      const cursorId = input.cursorId || undefined;
 
-      return products;
+      const products: ProductBrowseData[] | undefined =
+        await ctx.prisma.product.findMany({
+          take,
+          skip,
+          cursor: cursorId ? { id: cursorId } : undefined,
+          orderBy: {
+            updated_at: "desc",
+          },
+          select: {
+            id: true,
+            title: true,
+            price: true,
+            description: true,
+            cover_url: true,
+            owner: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        });
+
+      const nextCursor = products[products.length - 1]?.id;
+
+      return { products, nextCursor };
     }),
 });

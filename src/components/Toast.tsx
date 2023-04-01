@@ -1,17 +1,12 @@
 import classNames from "classnames";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
+import { type ToastData } from "~/types";
 
 type ToastProps = {
   isVisible?: boolean;
   onClickHandler: (event: React.MouseEvent<HTMLButtonElement>) => void;
 } & ToastData;
-
-export type ToastData = {
-  id: string;
-  message: string;
-  variant: "normal" | "success" | "danger";
-};
 
 const Toast: React.FC<ToastProps> = ({
   message,

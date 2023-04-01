@@ -15,11 +15,11 @@ datasource db {
 }
 
 model Product {
-    id          String  @id @default(cuid())
+    id          String            @id @default(cuid())
     title       String
     description String?
-    price       Int     @default(0)
-    categories  String[]
+    price       Int               @default(0)
+    categories  ProductCategory[]
 
     cover_url String?
     contents  ProductContent[]
@@ -33,17 +33,34 @@ model Product {
     purchases PurchaseHistory[]
 }
 
+model ProductCategory {
+    id   String @id @default(cuid())
+    name String
+
+    products Product[]
+}
+
 model ProductContent {
     id       String  @id @default(cuid())
     body     String?
     version  String
     code_url String
 
+    images   ProductImages @relation(fields: [imagesId], references: [id])
+    imagesId String
+
     product   Product @relation(fields: [productId], references: [id])
     productId String
 
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
+}
+
+model ProductImages {
+    id         String   @id @default(cuid())
+    images_url String[]
+
+    ProductContent ProductContent[]
 }
 
 model PurchaseHistory {

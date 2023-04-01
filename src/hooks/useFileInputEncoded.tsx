@@ -1,21 +1,12 @@
 import { useState, type FormEvent } from "react";
-import { z } from "zod";
-import { splitFileToBase64 } from "~/utils/files";
+import { type FileInputDataType } from "~/types";
+import { fileToFileData } from "~/utils/files";
 import useToastsStore from "~/zustand/toastsStore";
 
 type FileInputEnncodedOptions = {
   chunkSize: number;
   maxFileSize?: number;
 };
-
-export const FileInputData = z.object({
-  name: z.string(),
-  type: z.string(),
-  size: z.number(),
-  body: z.array(z.string()),
-});
-
-export type FileInputDataType = z.infer<typeof FileInputData>;
 
 function useFileInputEncoded(
   options?: FileInputEnncodedOptions
@@ -47,14 +38,11 @@ function useFileInputEncoded(
       return;
     }
 
-    const encoded = await splitFileToBase64(file, options?.chunkSize);
+    // const encoded = await splitFileToBase64(file, options?.chunkSize);
+    // const encoded = await fileToBase64(file);
+    const fileData = await fileToFileData(file);
 
-    setFileEncoded({
-      name: file.name,
-      type: file.type,
-      size: file.size,
-      body: encoded,
-    });
+    setFileEncoded(fileData);
   }
 
   return [fileData, onFileChangeHandler];

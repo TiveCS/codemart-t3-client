@@ -1,4 +1,49 @@
 import { Readable } from "stream";
+import { FileInputDataType } from "~/types";
+
+async function fileToBase64(file: File): Promise<string> {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+
+  const blobPromise = new Promise<string>((resolve, reject) => {
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      resolve(base64);
+    };
+    reader.onerror = () => {
+      reject(reader.error);
+    };
+  });
+
+  return Promise.resolve(blobPromise);
+}
+
+async function fileToFileData(file: File): Promise<FileInputDataType> {
+  const base64 = await fileToBase64(file);
+  const match = base64.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+
+  if (!match || match.length < 3) return Promise.reject();
+
+  const mime = match.at(1);
+  const body = match.at(2);
+
+  const { name, size, type } = file;
+
+  if (!body || !name || !size || !type) return Promise.reject();
+
+  return Promise.resolve({
+    body,
+    name,
+    size,
+    type,
+    mime,
+  });
+}
+
+function dataBase64ToBuffer(data: FileInputDataType) {
+  const { body } = data;
+  return Buffer.from(body, "base64");
+}
 
 async function splitFileToBase64(
   file: File,
@@ -59,4 +104,11 @@ function base64ArrayToReadableStream(base64Chunks: string[]): Readable {
   });
 }
 
-export { splitFileToBase64, mergeBase64ToFile, base64ArrayToReadableStream };
+export {
+  splitFileToBase64,
+  mergeBase64ToFile,
+  base64ArrayToReadableStream,
+  fileToBase64,
+  fileToFileData,
+  dataBase64ToBuffer,
+};

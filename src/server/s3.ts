@@ -1,7 +1,7 @@
 import * as Minio from "minio";
 import { env } from "~/env.mjs";
-import { type FileInputDataType } from "~/hooks/useFileInputEncoded";
-import { base64ArrayToReadableStream } from "~/utils/files";
+import { type FileInputDataType } from "~/types";
+import { dataBase64ToBuffer } from "~/utils/files";
 
 const globalForMinio = globalThis as unknown as { s3: Minio.Client };
 
@@ -29,11 +29,9 @@ export const s3Helper = {
     { keyPrefix: prefix = "", keySuffix: suffix = "" }: PutObjectOptions
   ) {
     const key = `${prefix}${fileData.name}${suffix}`;
-    const chunks = fileData.body;
+    const buffer = dataBase64ToBuffer(fileData);
 
-    const stream = base64ArrayToReadableStream(chunks);
-
-    const uploadInfo = await s3Client.putObject(env.S3_BUCKET, key, stream);
+    const uploadInfo = await s3Client.putObject(env.S3_BUCKET, key, buffer);
 
     return { key, uploadInfo };
   },
