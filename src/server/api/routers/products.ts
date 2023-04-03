@@ -10,6 +10,7 @@ export const productsRouter = createTRPCRouter({
         description: z.string().optional(),
         codeFile: FileInputData,
         coverImgFile: FileInputData,
+        assets: z.array(FileInputData),
         version: z.string(),
         price: z.number().min(0),
         body: z.string(),
@@ -26,16 +27,24 @@ export const productsRouter = createTRPCRouter({
         codeFile,
         body,
         coverImgFile,
+        assets,
       } = input;
 
-      const [codeUploadResult, coverImgUploadResult] = await Promise.all([
-        s3.putObject(codeFile, {}),
-        s3.putObject(coverImgFile, {}),
-      ]);
+      const [codeUploadResult, coverImgUploadResult, assetsUploadResult] =
+        await Promise.all([
+          s3.putObject(codeFile, {}),
+          s3.putObject(coverImgFile, {}),
+          s3.putMultiFileObject(assets, {}),
+        ]);
 
-      const [codeUrl, coverImgUrl] = await Promise.all([
+      const [codeUrl, coverImgUrl, assetsUrl] = await Promise.all([
         s3.presignedUrl(codeUploadResult.key, 60 * 60 * 24 * 7),
         s3.presignedUrl(coverImgUploadResult.key, 60 * 60 * 24 * 7),
+        Promise.all<string>(
+          assetsUploadResult.map((result) =>
+            s3.presignedUrl(result.key, 60 * 60 * 24 * 7)
+          )
+        ),
       ]);
 
       const product = await prisma.product.create({
@@ -60,6 +69,11 @@ export const productsRouter = createTRPCRouter({
           version,
           code_url: codeUrl,
           body,
+          images: {
+            create: {
+              images_url: assetsUrl,
+            },
+          },
           product: {
             connect: {
               id: product.id,
@@ -68,6 +82,20 @@ export const productsRouter = createTRPCRouter({
         },
       });
     }),
+
+  getProductById: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .query(({ ctx, input }) =>
+      ctx.prisma.product.findUnique({
+        where: {
+          id: input.id,
+        },
+      })
+    ),
 
   getProductsForBrowse: publicProcedure
     .input(

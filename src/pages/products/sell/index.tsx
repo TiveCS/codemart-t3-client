@@ -2,20 +2,24 @@ import * as DOMPurify from "dompurify";
 import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession } from "next-auth";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { useState, type FormEvent } from "react";
 import { Button } from "~/components/Button";
+import FileImageInput from "~/components/Forms/FileImageInput";
 import FileInput from "~/components/Forms/FileInput";
 import FormInput from "~/components/Forms/FormInput";
 import TextAreaInput from "~/components/Forms/TextAreaInput";
 import useFileInputEncoded from "~/hooks/useFileInputEncoded";
 import useInput from "~/hooks/useInput";
+import useMultiFileInput from "~/hooks/useMultiFileInput";
 import { authOptions } from "~/server/auth";
 import { api } from "~/utils/api";
 import useToastsStore from "~/zustand/toastsStore";
 
 const SellPage: NextPage = () => {
-  const addToast = useToastsStore.getState().addToast;
+  const router = useRouter();
 
+  const addToast = useToastsStore.getState().addToast;
   const publish = api.products.publish.useMutation();
 
   const [title, onTitleChangeHandler] = useInput("");
@@ -32,12 +36,23 @@ const SellPage: NextPage = () => {
   });
   const [body, onBodyChangeHandler] = useInput("");
 
+  const {
+    files: assets,
+    encodedDatas: encodedAssets,
+    onFileChangeHandler: onAssetsChangeHandler,
+    onDeleteFileHandler: onAssetsDeleteHandler,
+    onFileDropHandler: onAssetsDropHandler,
+    encodeFiles: encodeAssets,
+  } = useMultiFileInput({});
+
   const [isPublishing, setIsPublishing] = useState(false);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!codeFile || !coverImgFile) return;
+
+    void encodeAssets();
 
     setIsPublishing(true);
 
@@ -49,9 +64,20 @@ const SellPage: NextPage = () => {
       version,
       price: Number(price),
       body: DOMPurify.sanitize(body),
+      assets: encodedAssets,
     });
 
     mutate
+      .then(() => {
+        setIsPublishing(false);
+
+        addToast({
+          message: "Successfully publish a product",
+          variant: "success",
+        });
+
+        void router.push("/products");
+      })
       .catch(() => {
         setIsPublishing(false);
 
@@ -59,14 +85,8 @@ const SellPage: NextPage = () => {
           message: "Failed to publish product",
           variant: "danger",
         });
-      })
-      .finally(() => {
-        setIsPublishing(false);
 
-        addToast({
-          message: "Successfully publish a product",
-          variant: "success",
-        });
+        return Promise.reject();
       });
   };
 
@@ -126,6 +146,7 @@ const SellPage: NextPage = () => {
               label="Cover Image"
               onChangeHandler={onCoverImgFileChangeHandler}
               accept={"image/png,image/jpeg"}
+              required
             />
             <FileInput
               name="code_file"
@@ -135,7 +156,16 @@ const SellPage: NextPage = () => {
             />
           </div>
 
-          <div className="mt-4">
+          <div className="mt-4 flex flex-col gap-y-6">
+            <FileImageInput
+              name="assets"
+              label="Assets"
+              files={assets}
+              onChangeHandler={onAssetsChangeHandler}
+              onDeleteHandler={onAssetsDeleteHandler}
+              onDropHandler={onAssetsDropHandler}
+            />
+
             <TextAreaInput
               name="body"
               label="Body"
