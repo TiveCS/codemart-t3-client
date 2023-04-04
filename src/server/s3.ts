@@ -24,6 +24,7 @@ export const s3Helper = {
   async presignedUrl(objectName: string, expiry = 0) {
     return s3Client.presignedUrl("GET", env.S3_BUCKET, objectName, expiry);
   },
+
   async putObject(
     fileData: FileInputDataType,
     { keyPrefix: prefix = "", keySuffix: suffix = "" }: PutObjectOptions
@@ -34,6 +35,15 @@ export const s3Helper = {
     const uploadInfo = await s3Client.putObject(env.S3_BUCKET, key, buffer);
 
     return { key, uploadInfo };
+  },
+  async putMultiFileObject(
+    fileDatas: FileInputDataType[],
+    options: PutObjectOptions
+  ) {
+    const uploadPromises = fileDatas.map((fileData) =>
+      s3Helper.putObject(fileData, options)
+    );
+    return Promise.all(uploadPromises);
   },
 };
 
