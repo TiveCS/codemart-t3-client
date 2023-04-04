@@ -87,12 +87,45 @@ export const productsRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
+        userId: z.string().optional(),
       })
     )
     .query(({ ctx, input }) =>
       ctx.prisma.product.findUnique({
         where: {
           id: input.id,
+        },
+        include: {
+          purchases: input.userId
+            ? {
+                where: {
+                  userId: input.userId,
+                },
+                select: {
+                  id: true,
+                },
+              }
+            : false,
+          contents: {
+            orderBy: {
+              created_at: "desc",
+            },
+            select: {
+              body: true,
+              code_url: true,
+              version: true,
+              images: {
+                select: {
+                  images_url: true,
+                },
+              },
+            },
+          },
+          owner: {
+            select: {
+              name: true,
+            },
+          },
         },
       })
     ),
