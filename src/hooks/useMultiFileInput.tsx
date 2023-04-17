@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { type FileInputDataType } from "~/types";
+import { fileToFileData } from "~/utils/files";
 import { fileArrayToFileData } from "~/utils/files";
+import useToastsStore from "~/zustand/toastsStore";
 
 interface useMultiFileInputOptions {
   maxFiles?: number;
@@ -13,15 +15,51 @@ const useMultiFileInput = ({
 }: useMultiFileInputOptions) => {
   const [files, setFiles] = useState<File[]>([]);
   const [encodedDatas, setEncodedDatas] = useState<FileInputDataType[]>([]);
+  const [isEncoding, setIsEncoding] = useState(false);
 
-  const encodeFiles = async () => {
-    const encodedDatas = await fileArrayToFileData(files);
-    setEncodedDatas(encodedDatas);
+  const { addToast } = useToastsStore();
+
+  const encodeOneFile = async (file: File | null) => {
+    if (!file) return;
+    setIsEncoding(true);
+
+    const encoded = await fileToFileData(file);
+    setEncodedDatas([...encodedDatas, encoded]);
+
+    setIsEncoding(false);
+
+    addToast({
+      message: "File encoded successfully.",
+      variant: "success",
+    });
   };
 
-  const onFileChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const encodeFiles = async () => {
+    if (isEncoding) return;
+
+    setIsEncoding(true);
+    const encodedDatas = await fileArrayToFileData(files);
+
+    setEncodedDatas(encodedDatas);
+    setIsEncoding(false);
+
+    addToast({
+      message: "Multi files encoded successfully.",
+      variant: "success",
+    });
+  };
+
+  const onFileChangeHandler = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const newFiles = event.target.files;
     if (newFiles) {
+      if (newFiles.length > 1) {
+        await encodeFiles();
+      } else {
+        await encodeOneFile(newFiles.item(0));
+      }
+
       setFiles([...files, ...newFiles]);
     }
   };
@@ -56,6 +94,7 @@ const useMultiFileInput = ({
     onFileDropHandler,
     onDeleteFileHandler,
     encodeFiles,
+    isEncoding,
   };
 };
 

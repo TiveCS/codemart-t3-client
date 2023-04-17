@@ -1,8 +1,12 @@
-import { useState, type ChangeEvent } from "react";
+import { useState, type ChangeEvent, type SetStateAction } from "react";
 
 function useInput<T>(
   defaultValue: T
-): [T, (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void] {
+): [
+  T,
+  (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void,
+  (value: SetStateAction<T>) => void
+] {
   const [value, setValue] = useState<T>(defaultValue);
 
   function onValueChangeHandler(
@@ -12,7 +16,7 @@ function useInput<T>(
     setValue(e.target.value as unknown as T);
   }
 
-  return [value, onValueChangeHandler];
+  return [value, onValueChangeHandler, setValue];
 }
 
 export default useInput;

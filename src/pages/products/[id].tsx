@@ -47,7 +47,12 @@ const ProductDetails: NextPage = () => {
           <div id="product-header" className="flex flex-col gap-y-4">
             <div className="grid grid-cols-6">
               <div className="col-span-5 w-full">
-                <h2 className="text-2xl font-semibold">{product.title}</h2>
+                <h2 className="text-2xl font-semibold">
+                  {product.title}{" "}
+                  <span className="text-xl font-normal text-gray-400">
+                    {content.version}
+                  </span>
+                </h2>
                 <p>{product.description}</p>
               </div>
 

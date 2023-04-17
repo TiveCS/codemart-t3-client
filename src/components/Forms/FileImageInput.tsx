@@ -14,6 +14,7 @@ interface FileImageInputProps {
   ) => void | Promise<void>;
   onDropHandler: (event: React.DragEvent<HTMLLabelElement>) => void;
   onDeleteHandler: (index: number) => void;
+  isEncoding: boolean;
 }
 
 const FileImageInput: React.FC<FileImageInputProps> = ({
@@ -22,6 +23,7 @@ const FileImageInput: React.FC<FileImageInputProps> = ({
   label,
   required = false,
   files,
+  isEncoding,
   onChangeHandler,
   onDropHandler,
   onDeleteHandler,
@@ -61,7 +63,9 @@ const FileImageInput: React.FC<FileImageInputProps> = ({
       {label && (
         <label htmlFor={name} className="font-medium">
           {label}
-          {required && <span className="text-red-500">*</span>}
+          {required === false && (
+            <span className="font-normal text-gray-400"> (optional)</span>
+          )}
         </label>
       )}
 
@@ -119,6 +123,8 @@ const FileImageInput: React.FC<FileImageInputProps> = ({
             accept="image/png,image/jpeg"
             multiple
           />
+
+          {isEncoding && <p className="mt-8 text-codemart-600">Encoding...</p>}
         </label>
       </div>
     </div>
