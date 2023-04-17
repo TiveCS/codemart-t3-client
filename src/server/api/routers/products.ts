@@ -14,6 +14,7 @@ export const productsRouter = createTRPCRouter({
         version: z.string(),
         price: z.number().min(0),
         body: z.string(),
+        categories: z.array(z.string()),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -28,6 +29,7 @@ export const productsRouter = createTRPCRouter({
         body,
         coverImgFile,
         assets,
+        categories,
       } = input;
 
       const [codeUploadResult, coverImgUploadResult, assetsUploadResult] =
@@ -53,6 +55,7 @@ export const productsRouter = createTRPCRouter({
           description,
           price,
           cover_url: coverImgUrl,
+          categories,
           owner: {
             connect: {
               id: session.user.id,
@@ -136,12 +139,16 @@ export const productsRouter = createTRPCRouter({
         take: z.number().min(1).nullish(),
         skip: z.number().min(0).nullish(),
         cursorId: z.string().nullish(),
+        search: z.string().nullish(),
+        filters: z.array(z.string()).nullish(),
       })
     )
     .query(async ({ input, ctx }) => {
       const take = input.take || 6;
       const skip = input.skip || 0;
       const cursorId = input.cursorId || undefined;
+      const search = input.search || undefined;
+      const filters = input.filters || undefined;
 
       const products: ProductBrowseData[] | undefined =
         await ctx.prisma.product.findMany({
@@ -151,11 +158,27 @@ export const productsRouter = createTRPCRouter({
           orderBy: {
             updated_at: "desc",
           },
+          where:
+            search || filters
+              ? {
+                  title: { contains: search, mode: "insensitive" },
+                  description: {
+                    contains: search,
+                    mode: "insensitive",
+                  },
+                  categories: filters
+                    ? {
+                        hasSome: filters,
+                      }
+                    : undefined,
+                }
+              : undefined,
           select: {
             id: true,
             title: true,
             price: true,
             description: true,
+            categories: true,
             cover_url: true,
             owner: {
               select: {

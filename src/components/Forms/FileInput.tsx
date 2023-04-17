@@ -33,8 +33,8 @@ const FileInput: React.FC<FileInputProps> = ({
       <div className={className + " inline-flex w-full flex-col gap-y-2"}>
         <label htmlFor={name} className="text-sm font-medium">
           {label}
-          {label && required === true && (
-            <span className="text-red-600">*</span>
+          {label && required === false && (
+            <span className="text- bg-gray-300">(Optional)</span>
           )}
         </label>
         <input

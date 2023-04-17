@@ -7,6 +7,7 @@ import { useState, type FormEvent } from "react";
 import { Button } from "~/components/Button";
 import FileImageInput from "~/components/Forms/FileImageInput";
 import FileInput from "~/components/Forms/FileInput";
+import FormCategoryInput from "~/components/Forms/FormCategoryInput";
 import FormInput from "~/components/Forms/FormInput";
 import TextAreaInput from "~/components/Forms/TextAreaInput";
 import useFileInputEncoded from "~/hooks/useFileInputEncoded";
@@ -36,23 +37,88 @@ const SellPage: NextPage = () => {
   });
   const [body, onBodyChangeHandler] = useInput("");
 
+  const [category, onCategoryChangeHandler, setCategory] = useInput("");
+  const [categories, setCategories] = useState<string[]>([]);
+
   const {
     files: assets,
     encodedDatas: encodedAssets,
     onFileChangeHandler: onAssetsChangeHandler,
     onDeleteFileHandler: onAssetsDeleteHandler,
     onFileDropHandler: onAssetsDropHandler,
-    encodeFiles: encodeAssets,
+    isEncoding: isEncodingAssets,
   } = useMultiFileInput({});
 
   const [isPublishing, setIsPublishing] = useState(false);
+
+  const isValidInput = () => {
+    console.log({
+      title,
+      description,
+      codeFile,
+      coverImgFile,
+      version,
+      price: Number(price),
+      assets: {
+        encodedAssets,
+        assets: assets.length,
+      },
+      categories,
+    });
+
+    const isValidPrice = price !== undefined && price >= 0;
+    const isValidCategories = categories.length > 0;
+    const isValidAssets = encodedAssets.length > 0;
+
+    if (!isValidPrice) {
+      addToast({
+        message: "Please enter a valid price.",
+        variant: "danger",
+      });
+      return false;
+    }
+
+    if (!isValidCategories) {
+      addToast({
+        message: "Please write at least one category.",
+        variant: "danger",
+      });
+      return false;
+    }
+
+    if (!isValidAssets) {
+      addToast({
+        message: "Please upload at least one asset.",
+        variant: "danger",
+      });
+      return false;
+    }
+
+    if (
+      !title ||
+      !description ||
+      !codeFile ||
+      !coverImgFile ||
+      !isValidPrice ||
+      !isValidAssets ||
+      !isValidCategories
+    ) {
+      addToast({
+        message: "Please fill all the required fields.",
+        variant: "danger",
+      });
+      return false;
+    }
+
+    return true;
+  };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!codeFile || !coverImgFile) return;
 
-    void encodeAssets();
+    if (!isValidInput()) return;
 
     setIsPublishing(true);
 
@@ -65,6 +131,7 @@ const SellPage: NextPage = () => {
       price: Number(price),
       body: DOMPurify.sanitize(body),
       assets: encodedAssets,
+      categories,
     });
 
     mutate
@@ -98,8 +165,9 @@ const SellPage: NextPage = () => {
       </Head>
       <>
         <form
+          name="sell-form"
           className="flex flex-col md:px-6"
-          onSubmit={handleSubmit}
+          onSubmit={(event) => void handleSubmit(event)}
           encType="multipart/form-data"
         >
           <div className="grid w-full grid-flow-row gap-y-4 md:grid-flow-col md:gap-y-0 md:gap-x-8">
@@ -120,7 +188,7 @@ const SellPage: NextPage = () => {
             />
           </div>
 
-          <div className="mt-4 flex flex-row justify-between md:justify-start md:gap-x-8">
+          <div className="mt-4 flex flex-row flex-wrap justify-between mobile-sm:gap-y-4 md:justify-start md:gap-x-8">
             <FormInput
               name="price"
               label="Price"
@@ -137,6 +205,19 @@ const SellPage: NextPage = () => {
               placeholder="1.0.0"
               onChangeHandler={onVersionChangeHandler}
               className="max-w-us mobile-md:max-w-4xs"
+            />
+
+            <FormCategoryInput
+              name="category-input"
+              label="Categories"
+              placeholder="Ex: Laravel, React, Node, etc..."
+              onChangeHandler={onCategoryChangeHandler}
+              onAddHandler={setCategories}
+              onDeleteHandler={setCategories}
+              setCategory={setCategory}
+              value={category}
+              className="max-w-2xs"
+              items={categories}
             />
           </div>
 
@@ -164,6 +245,8 @@ const SellPage: NextPage = () => {
               onChangeHandler={onAssetsChangeHandler}
               onDeleteHandler={onAssetsDeleteHandler}
               onDropHandler={onAssetsDropHandler}
+              isEncoding={isEncodingAssets}
+              required
             />
 
             <TextAreaInput
@@ -174,7 +257,12 @@ const SellPage: NextPage = () => {
             />
           </div>
 
-          <Button type="submit" className="mt-8" isLoading={isPublishing}>
+          <Button
+            type="submit"
+            className="mt-8"
+            isLoading={isPublishing}
+            disabled={isPublishing || isEncodingAssets}
+          >
             Publish
           </Button>
         </form>

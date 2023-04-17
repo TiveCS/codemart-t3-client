@@ -8,6 +8,13 @@ import React from "react";
 import { Button } from "~/components/Button";
 import { api } from "~/utils/api";
 
+const formatPrice = (price: number) => {
+  return price.toLocaleString("id-ID", {
+    style: "currency",
+    currency: "IDR",
+  });
+};
+
 const ProductDetails: NextPage = () => {
   const router = useRouter();
   const { data: session } = useSession();
@@ -27,7 +34,8 @@ const ProductDetails: NextPage = () => {
     return <p>404</p>;
   }
 
-  const priceTag = product.price === 0 ? "Free" : `$${product.price}`;
+  const priceTag =
+    product.price === 0 ? "Free" : `${formatPrice(product.price)}`;
 
   const purchase = product.purchases?.at(0);
   const isOwner = product.ownerId === session?.user.id;
@@ -47,7 +55,12 @@ const ProductDetails: NextPage = () => {
           <div id="product-header" className="flex flex-col gap-y-4">
             <div className="grid grid-cols-6">
               <div className="col-span-5 w-full">
-                <h2 className="text-2xl font-semibold">{product.title}</h2>
+                <h2 className="text-2xl font-semibold">
+                  {product.title}{" "}
+                  <span className="text-xl font-normal text-gray-400">
+                    {content.version}
+                  </span>
+                </h2>
                 <p>{product.description}</p>
               </div>
 

@@ -3,17 +3,26 @@ import { type ProductBrowseData } from "~/types";
 import { Button } from "../Button";
 import NoImageCover from "public/assets/img/no-image.jpg";
 import Link from "next/link";
+import CategoryItem from "../Forms/CategoryItem";
 
 interface ProductCardProps {
   product: ProductBrowseData;
   className?: string;
 }
 
+const formatPrice = (price: number) => {
+  return price.toLocaleString("id-ID", {
+    style: "currency",
+    currency: "IDR",
+  });
+};
+
 const ProductCard: React.FC<ProductCardProps> = ({
   product,
   className = "",
 }) => {
-  const priceString = product.price > 0 ? `$${product.price}` : `Free`;
+  const priceString =
+    product.price > 0 ? `${formatPrice(product.price)}` : `Free`;
 
   return (
     <div
@@ -41,6 +50,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </Link>
 
           <p className="text-sm text-gray-600">{product.description}</p>
+
+          <div className="mt-2 flex flex-row">
+            {product.categories.map((category) => (
+              <CategoryItem text={category} key={category} />
+            ))}
+          </div>
         </div>
 
         <div className="grid grid-flow-col items-center justify-between">

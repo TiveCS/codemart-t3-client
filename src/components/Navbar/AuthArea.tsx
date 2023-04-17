@@ -3,9 +3,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "../Button";
 import { Bars3Icon } from "@heroicons/react/24/outline";
+import { useState } from "react";
+import AvatarDropdown from "./AvatarDropdown";
 
 const AuthArea: React.FC = () => {
   const { data: session, status } = useSession();
+
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="flex flex-row items-center justify-end">
@@ -17,7 +21,10 @@ const AuthArea: React.FC = () => {
         </>
       )}
 
-      <div className="hidden gap-x-4 lg:flex">
+      <div
+        className="hidden cursor-pointer gap-x-4 lg:flex"
+        onClick={() => setIsOpen(!isOpen)}
+      >
         {status === "authenticated" && (
           <>
             <p
@@ -37,6 +44,8 @@ const AuthArea: React.FC = () => {
                 className="h-10 w-10 rounded-full md:max-w-fit"
               />
             )}
+
+            {isOpen && <AvatarDropdown />}
           </>
         )}
       </div>

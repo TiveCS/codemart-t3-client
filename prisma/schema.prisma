@@ -15,14 +15,14 @@ datasource db {
 }
 
 model Product {
-    id          String            @id @default(cuid())
+    id          String  @id @default(cuid())
     title       String
     description String?
-    price       Int               @default(0)
-    categories  ProductCategory[]
+    price       Int     @default(0)
 
-    cover_url String?
-    contents  ProductContent[]
+    cover_url  String?
+    contents   ProductContent[]
+    categories String[]
 
     owner   User   @relation(fields: [ownerId], references: [id])
     ownerId String
@@ -31,13 +31,6 @@ model Product {
     updated_at DateTime @updatedAt
 
     purchases PurchaseHistory[]
-}
-
-model ProductCategory {
-    id   String @id @default(cuid())
-    name String
-
-    products Product[]
 }
 
 model ProductContent {
