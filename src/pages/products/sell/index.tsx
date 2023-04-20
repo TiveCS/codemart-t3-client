@@ -232,6 +232,7 @@ const SellPage: NextPage = () => {
             <FileInput
               name="code_file"
               label="Source File"
+              accept=".zip"
               onChangeHandler={onCodeFileChangeHandler}
               required
             />

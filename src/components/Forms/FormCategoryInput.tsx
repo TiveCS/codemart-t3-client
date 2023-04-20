@@ -95,6 +95,7 @@ const FormCategoryInput: React.FC<FormCategoryInputProps> = ({
             <CategoryItem
               key={index}
               text={item}
+              style="filled"
               onDeleteHandler={onDeleteHandler}
             />
           ))}

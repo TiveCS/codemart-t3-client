@@ -19,49 +19,67 @@ const useMultiFileInput = ({
 
   const { addToast } = useToastsStore();
 
-  const encodeOneFile = async (file: File | null) => {
+  const encodeOneFile = (file: File | null) => {
     if (!file) return;
     setIsEncoding(true);
 
-    const encoded = await fileToFileData(file);
-    setEncodedDatas([...encodedDatas, encoded]);
+    fileToFileData(file)
+      .then((encoded) => {
+        setEncodedDatas([...encodedDatas, encoded]);
+        setIsEncoding(false);
 
-    setIsEncoding(false);
-
-    addToast({
-      message: "File encoded successfully.",
-      variant: "success",
-    });
+        addToast({
+          message: "File encoded successfully.",
+          variant: "success",
+        });
+      })
+      .catch(() => {
+        setIsEncoding(false);
+        addToast({
+          message: "Error encoding file.",
+          variant: "danger",
+        });
+      });
   };
 
-  const encodeFiles = async () => {
+  const encodeFiles = (fileList: FileList) => {
+    if (!fileList) return;
+    if (fileList.length == 0) return;
     if (isEncoding) return;
 
     setIsEncoding(true);
-    const encodedDatas = await fileArrayToFileData(files);
 
-    setEncodedDatas(encodedDatas);
-    setIsEncoding(false);
+    const newFiles: File[] = Array.from(fileList);
 
-    addToast({
-      message: "Multi files encoded successfully.",
-      variant: "success",
-    });
+    fileArrayToFileData(newFiles)
+      .then((encodedDatas) => {
+        setEncodedDatas(encodedDatas);
+        setIsEncoding(false);
+
+        addToast({
+          message: "Multi files encoded successfully.",
+          variant: "success",
+        });
+      })
+      .catch(() => {
+        setIsEncoding(false);
+        addToast({
+          message: "Error encoding multi files.",
+          variant: "danger",
+        });
+      });
   };
 
-  const onFileChangeHandler = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const onFileChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newFiles = event.target.files;
-    if (newFiles) {
-      if (newFiles.length > 1) {
-        await encodeFiles();
-      } else {
-        await encodeOneFile(newFiles.item(0));
-      }
+    if (!newFiles) return;
 
-      setFiles([...files, ...newFiles]);
+    if (newFiles.length > 1) {
+      encodeFiles(newFiles);
+    } else {
+      encodeOneFile(newFiles.item(0));
     }
+    setFiles([...files, ...newFiles]);
   };
 
   const onFileDropHandler = (event: React.DragEvent<HTMLLabelElement>) => {
@@ -83,8 +101,13 @@ const useMultiFileInput = ({
 
   const onDeleteFileHandler = (index: number) => {
     const newFiles = [...files];
+    const newEncodedDatas = [...encodedDatas];
+
     newFiles.splice(index, 1);
+    newEncodedDatas.splice(index, 1);
+
     setFiles(newFiles);
+    setEncodedDatas(newEncodedDatas);
   };
 
   return {
