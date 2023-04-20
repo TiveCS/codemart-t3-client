@@ -14,6 +14,7 @@ const formatPrice = (price: number) => {
   return price.toLocaleString("id-ID", {
     style: "currency",
     currency: "IDR",
+    maximumFractionDigits: 0,
   });
 };
 
@@ -51,9 +52,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
           <p className="text-sm text-gray-600">{product.description}</p>
 
-          <div className="mt-2 flex flex-row">
+          <div className="mt-2 flex flex-row gap-x-1.5">
             {product.categories.map((category) => (
-              <CategoryItem text={category} key={category} />
+              <CategoryItem text={category} key={category} style="outlined" />
             ))}
           </div>
         </div>

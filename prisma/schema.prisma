@@ -24,6 +24,10 @@ model Product {
     contents   ProductContent[]
     categories String[]
 
+    body     String?
+    images   ProductImages? @relation(fields: [imagesId], references: [id])
+    imagesId String?
+
     owner   User   @relation(fields: [ownerId], references: [id])
     ownerId String
 
@@ -34,26 +38,24 @@ model Product {
 }
 
 model ProductContent {
-    id       String  @id @default(cuid())
-    body     String?
+    id       String @id @default(cuid())
     version  String
     code_url String
-
-    images   ProductImages? @relation(fields: [imagesId], references: [id])
-    imagesId String?
 
     product   Product @relation(fields: [productId], references: [id])
     productId String
 
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
+
+    @@unique([productId, version])
 }
 
 model ProductImages {
     id         String   @id @default(cuid())
     images_url String[]
 
-    ProductContent ProductContent[]
+    products Product[]
 }
 
 model PurchaseHistory {

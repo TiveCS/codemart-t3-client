@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { Button } from "~/components/Button";
+import DetailsBodyArea from "~/components/ProductDetailsPage/DetailsBodyArea";
 import { api } from "~/utils/api";
 
 const formatPrice = (price: number) => {
@@ -40,6 +41,12 @@ const ProductDetails: NextPage = () => {
   const purchase = product.purchases?.at(0);
   const isOwner = product.ownerId === session?.user.id;
   const content = product.contents[0];
+  const { body, images } = product;
+
+  const versionDatas = product.contents.map((content) => ({
+    version: content.version,
+    code_url: content.code_url,
+  }));
 
   if (!content) {
     return <p>Something went wrong</p>;
@@ -54,7 +61,7 @@ const ProductDetails: NextPage = () => {
         <div className="mx-auto max-w-6xl rounded-sm bg-white px-4 py-8 shadow md:px-6">
           <div id="product-header" className="flex flex-col gap-y-4">
             <div className="grid grid-cols-6">
-              <div className="col-span-5 w-full">
+              <div className="col-span-4 w-full">
                 <h2 className="text-2xl font-semibold">
                   {product.title}{" "}
                   <span className="text-xl font-normal text-gray-400">
@@ -64,18 +71,29 @@ const ProductDetails: NextPage = () => {
                 <p>{product.description}</p>
               </div>
 
-              {purchase !== undefined || isOwner ? (
-                <Link href={content.code_url} target="_blank">
-                  <Button>Download</Button>
-                </Link>
-              ) : (
-                <Link
-                  href={"/products/[id]/purchase"}
-                  as={`/products/${id}/purchase`}
-                >
-                  <Button>Purchase for {priceTag}</Button>
-                </Link>
-              )}
+              <div className="col-span-2 flex flex-row items-center justify-evenly">
+                {purchase !== undefined || isOwner ? (
+                  <Link href={content.code_url} target="_blank">
+                    <Button>Download Latest</Button>
+                  </Link>
+                ) : (
+                  <Link
+                    href={"/products/[id]/purchase"}
+                    as={`/products/${id}/purchase`}
+                  >
+                    <Button>Purchase for {priceTag}</Button>
+                  </Link>
+                )}
+
+                {isOwner && (
+                  <Link
+                    href={"/products/[id]/update"}
+                    as={`/products/${id}/update`}
+                  >
+                    <Button style="text">Post an Update</Button>
+                  </Link>
+                )}
+              </div>
             </div>
 
             <hr />
@@ -85,7 +103,7 @@ const ProductDetails: NextPage = () => {
             id="product-assets"
             className="relative mt-8 flex h-52 w-full mobile-lg:h-64"
           >
-            {content.images?.images_url?.map((url, index) => (
+            {images?.images_url?.map((url, index) => (
               <ProductAssetImg alt={product.title} url={url} key={index} />
             ))}
           </div>
@@ -93,11 +111,7 @@ const ProductDetails: NextPage = () => {
           <div className="mt-6">
             <hr />
 
-            <div
-              id="product-description"
-              className="mt-6"
-              dangerouslySetInnerHTML={{ __html: content.body ?? "" }}
-            ></div>
+            <DetailsBodyArea body={body} versionDatas={versionDatas} />
           </div>
         </div>
       </>

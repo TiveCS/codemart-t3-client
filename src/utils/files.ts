@@ -23,11 +23,12 @@ async function fileToBase64(file: File): Promise<string> {
   return Promise.resolve(blobPromise);
 }
 
-async function fileArrayToFileData(
-  files: File[]
-): Promise<FileInputDataType[]> {
-  const filePromises = files.map((file) => fileToFileData(file));
-  return Promise.all(filePromises);
+async function fileArrayToFileData(files: File[]) {
+  return Promise.all(
+    files.map((file) => {
+      return fileToFileData(file);
+    })
+  );
 }
 
 async function fileToFileData(file: File): Promise<FileInputDataType> {

@@ -1,8 +1,53 @@
 import { z } from "zod";
 import { FileInputData, type ProductBrowseData } from "~/types";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { Prisma } from "@prisma/client";
 
 export const productsRouter = createTRPCRouter({
+  publishNewVersion: protectedProcedure
+    .input(
+      z.object({
+        productId: z.string(),
+        version: z.string(),
+        codeFile: FileInputData,
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { session, prisma, s3 } = ctx;
+
+      // TODO validate if the user is the owner of the product
+
+      const { version, codeFile, productId } = input;
+
+      const codeUploadResult = await s3.putObject(codeFile, {});
+
+      const codeUrl = await s3.presignedUrl(
+        codeUploadResult.key,
+        60 * 60 * 24 * 7
+      );
+
+      try {
+        await prisma.productContent.create({
+          data: {
+            version,
+            code_url: codeUrl,
+            product: {
+              connect: {
+                id: productId,
+              },
+            },
+          },
+        });
+      } catch (err) {
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+          if (err.code === "P2002") {
+            throw new Error("Version already exists");
+          }
+        }
+        throw err;
+      }
+    }),
+
   publish: protectedProcedure
     .input(
       z.object({
@@ -55,6 +100,12 @@ export const productsRouter = createTRPCRouter({
           description,
           price,
           cover_url: coverImgUrl,
+          body,
+          images: {
+            create: {
+              images_url: assetsUrl,
+            },
+          },
           categories,
           owner: {
             connect: {
@@ -71,12 +122,6 @@ export const productsRouter = createTRPCRouter({
         data: {
           version,
           code_url: codeUrl,
-          body,
-          images: {
-            create: {
-              images_url: assetsUrl,
-            },
-          },
           product: {
             connect: {
               id: product.id,
@@ -99,6 +144,7 @@ export const productsRouter = createTRPCRouter({
           id: input.id,
         },
         include: {
+          images: true,
           purchases: input.userId
             ? {
                 where: {
@@ -114,14 +160,8 @@ export const productsRouter = createTRPCRouter({
               created_at: "desc",
             },
             select: {
-              body: true,
               code_url: true,
               version: true,
-              images: {
-                select: {
-                  images_url: true,
-                },
-              },
             },
           },
           owner: {
