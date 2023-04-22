@@ -71,7 +71,7 @@ const FormCategoryInput: React.FC<FormCategoryInputProps> = ({
       />
 
       {value && value.length > 0 && (
-        <div className="absolute top-full w-full  border border-codemart-200 bg-white shadow">
+        <div className="absolute top-full mt-1.5 w-full border border-codemart-200 bg-white shadow">
           <Button
             className="text-left text-sm"
             style="text"

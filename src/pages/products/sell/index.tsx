@@ -52,20 +52,6 @@ const SellPage: NextPage = () => {
   const [isPublishing, setIsPublishing] = useState(false);
 
   const isValidInput = () => {
-    console.log({
-      title,
-      description,
-      codeFile,
-      coverImgFile,
-      version,
-      price: Number(price),
-      assets: {
-        encodedAssets,
-        assets: assets.length,
-      },
-      categories,
-    });
-
     const isValidPrice = price !== undefined && price >= 0;
     const isValidCategories = categories.length > 0;
     const isValidAssets = encodedAssets.length > 0;

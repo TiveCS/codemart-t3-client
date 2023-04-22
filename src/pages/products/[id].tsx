@@ -3,7 +3,6 @@ import { useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import React from "react";
 import { Button } from "~/components/Button";
 import DetailsBodyArea from "~/components/ProductDetailsPage/DetailsBodyArea";
@@ -16,11 +15,15 @@ const formatPrice = (price: number) => {
   });
 };
 
-const ProductDetails: NextPage = () => {
-  const router = useRouter();
-  const { data: session } = useSession();
+interface ProductDetailsProps {
+  id: string;
+}
 
-  const id = router.query.id as string;
+const ProductDetails: NextPage<ProductDetailsProps> = ({ id }) => {
+  const { data: session } = useSession();
+  if (!id) {
+    return <p>400</p>;
+  }
 
   const { data: product, isLoading } = api.products.getProductById.useQuery({
     id,
@@ -111,7 +114,12 @@ const ProductDetails: NextPage = () => {
           <div className="mt-6">
             <hr />
 
-            <DetailsBodyArea body={body} versionDatas={versionDatas} />
+            <DetailsBodyArea
+              productId={product.id}
+              ownerId={product.ownerId}
+              body={body}
+              versionDatas={versionDatas}
+            />
           </div>
         </div>
       </>
@@ -129,3 +137,11 @@ const ProductAssetImg: React.FC<ProductAssetImgProps> = ({ url, alt }) => {
 };
 
 export default ProductDetails;
+
+ProductDetails.getInitialProps = ({ query }) => {
+  const id = query.id as string;
+
+  return {
+    id,
+  };
+};

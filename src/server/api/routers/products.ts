@@ -1,9 +1,41 @@
+import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { FileInputData, type ProductBrowseData } from "~/types";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
-import { Prisma } from "@prisma/client";
 
 export const productsRouter = createTRPCRouter({
+  editProduct: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        title: z.string(),
+        description: z.string().optional(),
+        price: z.number().min(0),
+        body: z.string(),
+        categories: z.array(z.string()),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { session, prisma } = ctx;
+
+      const { id, title, description, price, body, categories } = input;
+
+      // TODO validate if the user is the owner of the product
+
+      await prisma.product.update({
+        where: {
+          id,
+        },
+        data: {
+          title,
+          description,
+          price,
+          body,
+          categories,
+        },
+      });
+    }),
+
   publishNewVersion: protectedProcedure
     .input(
       z.object({
