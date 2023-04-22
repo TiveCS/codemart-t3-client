@@ -16,10 +16,10 @@ const DetailsBodyButtonSelector: React.FC<DetailsBodyButtonSelectorProps> = ({
 }) => {
   return (
     <button
-      className={` ${
+      className={` border-b pb-2 ${
         currentSection === section
-          ? "font-medium text-blue-500"
-          : "text-gray-500"
+          ? "border-codemart-600 font-medium text-codemart-600"
+          : "border-transparent text-gray-500"
       }`}
       onClick={() => setSection(section)}
     >

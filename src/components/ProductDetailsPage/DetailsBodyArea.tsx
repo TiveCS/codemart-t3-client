@@ -1,27 +1,36 @@
+import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { useState } from "react";
-import DetailsBodyButtonSelector from "./DetailsBodyButtonSelector";
 import { Button } from "../Button";
+import DetailsBodyButtonSelector from "./DetailsBodyButtonSelector";
 
 interface DetailsBodyAreaProps {
+  productId: string;
   versionDatas: {
     version: string;
     code_url: string;
   }[];
   body: string | null;
+  ownerId: string;
 }
 
-export type SectionAreas = "description" | "versions" | "feedbacks";
+export type SectionAreas = "description" | "versions" | "feedbacks" | "manage";
 
 const DetailsBodyArea: React.FC<DetailsBodyAreaProps> = ({
   body,
   versionDatas,
+  ownerId,
+  productId,
 }) => {
+  const { data: session } = useSession();
+  const isOwner = ownerId === session?.user.id;
+
   const [section, setSection] = useState<SectionAreas>("description");
 
   return (
     <>
       <div id="section-changer" className="mt-4">
-        <div className="flex flex-row items-center justify-evenly">
+        <div className="grid grid-flow-row grid-cols-2 items-center gap-y-4 gap-x-2 md:grid-flow-col md:grid-cols-4">
           <DetailsBodyButtonSelector
             currentSection={section}
             section="description"
@@ -45,6 +54,16 @@ const DetailsBodyArea: React.FC<DetailsBodyAreaProps> = ({
           >
             Feedbacks
           </DetailsBodyButtonSelector>
+
+          {isOwner && (
+            <DetailsBodyButtonSelector
+              currentSection={section}
+              section="manage"
+              setSection={setSection}
+            >
+              Manage
+            </DetailsBodyButtonSelector>
+          )}
         </div>
       </div>
 
@@ -69,6 +88,14 @@ const DetailsBodyArea: React.FC<DetailsBodyAreaProps> = ({
               </a>
             </div>
           ))}
+        </div>
+      )}
+
+      {section === "manage" && (
+        <div id="product-manage" className="mt-6 flex flex-col gap-y-3">
+          <Link href={`/products/[id]/edit`} as={`/products/${productId}/edit`}>
+            <Button style="outline">Edit Details</Button>
+          </Link>
         </div>
       )}
     </>
