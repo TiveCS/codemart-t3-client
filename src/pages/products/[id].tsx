@@ -63,8 +63,14 @@ const ProductDetails: NextPage<ProductDetailsProps> = ({ id }) => {
       <>
         <div className="mx-auto max-w-6xl rounded-sm bg-white px-4 py-8 shadow md:px-6">
           <div id="product-header" className="flex flex-col gap-y-4">
-            <div className="grid grid-cols-6">
-              <div className="col-span-4 w-full">
+            <div
+              id="product-header-content"
+              className="grid grid-flow-row items-center gap-y-6 md:grid-flow-col md:grid-cols-6 md:gap-y-0"
+            >
+              <div
+                id="product-header-content-details"
+                className="w-full md:col-span-4"
+              >
                 <h2 className="text-2xl font-semibold">
                   {product.title}{" "}
                   <span className="text-xl font-normal text-gray-400">
@@ -74,9 +80,16 @@ const ProductDetails: NextPage<ProductDetailsProps> = ({ id }) => {
                 <p>{product.description}</p>
               </div>
 
-              <div className="col-span-2 flex flex-row items-center justify-evenly">
+              <div
+                id="product-header-content-actions"
+                className="flex flex-col items-center justify-evenly md:col-span-2 md:gap-y-2 lg:flex-row"
+              >
                 {purchase !== undefined || isOwner ? (
-                  <Link href={content.code_url} target="_blank">
+                  <Link
+                    className="w-full lg:w-fit"
+                    href={content.code_url}
+                    target="_blank"
+                  >
                     <Button>Download Latest</Button>
                   </Link>
                 ) : (
