@@ -39,6 +39,7 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
     session: opts.session,
     prisma,
     s3: s3Helper,
+    midtrans,
   };
 };
 
@@ -70,6 +71,7 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 import { s3Helper } from "../s3";
+import { midtrans } from "../midtrans";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,

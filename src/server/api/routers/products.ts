@@ -163,6 +163,20 @@ export const productsRouter = createTRPCRouter({
       });
     }),
 
+  getProductByIdForPurchase: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) =>
+      ctx.prisma.product.findUnique({
+        where: {
+          id: input.id,
+        },
+      })
+    ),
+
   getProductById: publicProcedure
     .input(
       z.object({
@@ -184,6 +198,7 @@ export const productsRouter = createTRPCRouter({
                 },
                 select: {
                   id: true,
+                  status: true,
                 },
               }
             : false,

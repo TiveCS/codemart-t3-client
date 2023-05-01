@@ -266,7 +266,7 @@ const getServerSideProps: GetServerSideProps<ProductEditPageProps> = async (
   if (!session) {
     return {
       redirect: {
-        destination: "/login",
+        destination: "/auth",
         permanent: false,
       },
     };
