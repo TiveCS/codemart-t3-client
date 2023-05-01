@@ -60,7 +60,7 @@ model ProductImages {
 
 model PurchaseHistory {
     id        String @id @default(cuid())
-    orderId   String
+    orderId   String @unique
     status    String
     price     Int
     productId String

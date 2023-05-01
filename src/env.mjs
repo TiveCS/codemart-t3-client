@@ -31,6 +31,7 @@ const server = z.object({
 
   // Midtrans
   MIDTRANS_SERVER_KEY: z.string().min(1),
+  MIDTRANS_TRANSACTION_CALLBACK_URL: z.string().min(1),
 });
 
 /**
@@ -61,6 +62,8 @@ const processEnv = {
   S3_CLIENT_ID: process.env.S3_CLIENT_ID,
   S3_CLIENT_SECRET: process.env.S3_CLIENT_SECRET,
   MIDTRANS_SERVER_KEY: process.env.MIDTRANS_SERVER_KEY,
+  MIDTRANS_TRANSACTION_CALLBACK_URL:
+    process.env.MIDTRANS_TRANSACTION_CALLBACK_URL,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
 

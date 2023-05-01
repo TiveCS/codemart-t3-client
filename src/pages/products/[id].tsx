@@ -84,7 +84,8 @@ const ProductDetails: NextPage<ProductDetailsProps> = ({ id }) => {
                 id="product-header-content-actions"
                 className="flex flex-col items-center justify-evenly md:col-span-2 md:gap-y-2 lg:flex-row"
               >
-                {purchase !== undefined || isOwner ? (
+                {(purchase !== undefined && purchase.status === "capture") ||
+                isOwner ? (
                   <Link
                     className="w-full lg:w-fit"
                     href={content.code_url}
@@ -132,6 +133,7 @@ const ProductDetails: NextPage<ProductDetailsProps> = ({ id }) => {
               ownerId={product.ownerId}
               body={body}
               versionDatas={versionDatas}
+              userPurchase={purchase}
             />
           </div>
         </div>
