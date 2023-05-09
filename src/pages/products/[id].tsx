@@ -46,6 +46,9 @@ const ProductDetails: NextPage<ProductDetailsProps> = ({ id }) => {
   const content = product.contents[0];
   const { body, images } = product;
 
+  const hasDownloadAccess =
+    product?.price === 0 || purchase?.status === "capture" || isOwner;
+
   const versionDatas = product.contents.map((content) => ({
     version: content.version,
     code_url: content.code_url,
@@ -84,8 +87,7 @@ const ProductDetails: NextPage<ProductDetailsProps> = ({ id }) => {
                 id="product-header-content-actions"
                 className="flex flex-col items-center justify-evenly md:col-span-2 md:gap-y-2 lg:flex-row"
               >
-                {(purchase !== undefined && purchase.status === "capture") ||
-                isOwner ? (
+                {hasDownloadAccess ? (
                   <Link
                     className="w-full lg:w-fit"
                     href={content.code_url}
@@ -133,7 +135,7 @@ const ProductDetails: NextPage<ProductDetailsProps> = ({ id }) => {
               ownerId={product.ownerId}
               body={body}
               versionDatas={versionDatas}
-              userPurchase={purchase}
+              hasDownloadAccess={hasDownloadAccess}
             />
           </div>
         </div>
