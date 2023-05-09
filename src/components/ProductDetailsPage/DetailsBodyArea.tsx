@@ -3,7 +3,6 @@ import Link from "next/link";
 import { useState } from "react";
 import { Button } from "../Button";
 import DetailsBodyButtonSelector from "./DetailsBodyButtonSelector";
-import { type PurchaseHistory } from "@prisma/client";
 
 interface DetailsBodyAreaProps {
   productId: string;
@@ -13,13 +12,7 @@ interface DetailsBodyAreaProps {
   }[];
   body: string | null;
   ownerId: string;
-  userPurchase:
-    | PurchaseHistory
-    | {
-        id: string;
-        status: string;
-      }
-    | undefined;
+  hasDownloadAccess: boolean;
 }
 
 export type SectionAreas = "description" | "versions" | "feedbacks" | "manage";
@@ -29,7 +22,7 @@ const DetailsBodyArea: React.FC<DetailsBodyAreaProps> = ({
   versionDatas,
   ownerId,
   productId,
-  userPurchase,
+  hasDownloadAccess,
 }) => {
   const { data: session } = useSession();
   const isOwner = ownerId === session?.user.id;
@@ -93,9 +86,7 @@ const DetailsBodyArea: React.FC<DetailsBodyAreaProps> = ({
             >
               <span className="font-medium text-blue-500">{data.version}</span>
 
-              {(isOwner ||
-                (userPurchase !== undefined &&
-                  userPurchase.status === "capture")) && (
+              {hasDownloadAccess && (
                 <a href={data.code_url} target="_blank" rel="noreferrer">
                   <Button style="outline">Download</Button>
                 </a>
