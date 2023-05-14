@@ -1,3 +1,4 @@
+import Footer from "~/components/Footer";
 import Navbar from "~/components/Navbar";
 import Toast from "~/components/Toast";
 import useToastsStore from "~/zustand/toastsStore";
@@ -28,6 +29,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           />
         ))}
       </div>
+
+      <Footer />
     </div>
   );
 };
