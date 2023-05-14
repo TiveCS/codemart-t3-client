@@ -2,30 +2,33 @@ import { type ChangeEvent, type InputHTMLAttributes } from "react";
 
 interface FormInputProps {
   id?: string;
-  name: string;
+  name?: string;
   label?: string;
   type?: InputHTMLAttributes<HTMLInputElement>["type"];
   placeholder?: string;
   className?: string;
   value?: string | number | readonly string[];
-  onChangeHandler: (e: ChangeEvent<HTMLInputElement>) => void;
+  onChangeHandler?: (e: ChangeEvent<HTMLInputElement>) => void;
   required?: boolean;
   icon?: React.ReactNode;
 }
 
 const FormInput: React.FC<FormInputProps> = ({
   id,
-  name,
+  name = undefined,
   label,
   type = "text",
   placeholder,
   className = "",
   value,
-  onChangeHandler,
+  onChangeHandler = undefined,
   required = false,
 }) => {
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     event.preventDefault();
+
+    if (!onChangeHandler) return;
+
     onChangeHandler(event);
   }
 
