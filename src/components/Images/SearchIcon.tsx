@@ -15,16 +15,16 @@ const SearchIcon: React.FC<Props> = () => {
         <path
           d="M13.4167 24.5C19.5379 24.5 24.5 19.5379 24.5 13.4167C24.5 7.29555 19.5379 2.33337 13.4167 2.33337C7.29555 2.33337 2.33337 7.29555 2.33337 13.4167C2.33337 19.5379 7.29555 24.5 13.4167 24.5Z"
           stroke="#0087FD"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           d="M25.6667 25.6667L23.3334 23.3334"
           stroke="#0087FD"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </svg>
     </>
