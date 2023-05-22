@@ -93,10 +93,24 @@ const useMultiFileInput = ({
     for (let i = 0; i < newFiles.length; i++) {
       const file = newFiles[i];
       if (!file) continue;
-      if (file.size > maxFileSize) return;
+      if (file.size > maxFileSize) {
+        addToast({
+          message: `File ${file.name} is too large.`,
+          variant: "danger",
+        });
+        return;
+      }
     }
 
-    setFiles([...files, ...newFiles]);
+    if (newFiles.length > 1) {
+      encodeFiles(newFiles);
+    } else {
+      encodeOneFile(newFiles.item(0));
+    }
+
+    setFiles((prev) => {
+      return [...prev, ...newFiles];
+    });
   };
 
   const onDeleteFileHandler = (index: number) => {

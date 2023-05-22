@@ -1,3 +1,4 @@
+import Footer from "~/components/Footer";
 import Navbar from "~/components/Navbar";
 import Toast from "~/components/Toast";
 import useToastsStore from "~/zustand/toastsStore";
@@ -14,7 +15,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <Navbar />
       <main className="my-8 px-6 md:px-8">{children}</main>
 
-      <div className="absolute bottom-16 right-6 hidden min-w-xs md:grid md:grid-flow-row md:gap-y-4 lg:min-w-sm">
+      <div
+        id="toast-container"
+        className="fixed bottom-6 right-6 hidden min-w-xs md:grid md:grid-flow-row md:gap-y-4 lg:min-w-sm"
+      >
         {toastsStore.toasts.map((toast) => (
           <Toast
             key={toast.id}
@@ -25,6 +29,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           />
         ))}
       </div>
+
+      <Footer />
     </div>
   );
 };

@@ -2,7 +2,7 @@ import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession } from "next-auth";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "~/components/Button";
 import { authOptions } from "~/server/auth";
 import { api } from "~/utils/api";
@@ -13,6 +13,7 @@ interface ProductPurchasePageProps {
 
 const ProductPurchasePage: NextPage<ProductPurchasePageProps> = ({ id }) => {
   const router = useRouter();
+  const [isLoadingPaymentUrl, setIsLoadingPaymentUrl] = useState(false);
 
   const { data: product, isLoading } =
     api.products.getProductByIdForPurchase.useQuery(
@@ -36,6 +37,12 @@ const ProductPurchasePage: NextPage<ProductPurchasePageProps> = ({ id }) => {
       if (!data) return;
 
       window.open(data.redirect_url, "_blank");
+    },
+    onMutate: () => {
+      setIsLoadingPaymentUrl(true);
+    },
+    onError: () => {
+      setIsLoadingPaymentUrl(false);
     },
   });
 
@@ -76,7 +83,7 @@ const ProductPurchasePage: NextPage<ProductPurchasePageProps> = ({ id }) => {
   ) => {
     event.preventDefault();
 
-    const response = createTransaction.mutate({
+    createTransaction.mutate({
       productId: product.id,
     });
   };
@@ -90,7 +97,10 @@ const ProductPurchasePage: NextPage<ProductPurchasePageProps> = ({ id }) => {
         <p>{product.title}</p>
         <p>Price: {formattedPrice}</p>
 
-        <Button onClick={(e) => handleStartTransaction(e)}>
+        <Button
+          onClick={(e) => handleStartTransaction(e)}
+          isLoading={isLoadingPaymentUrl}
+        >
           Confirm Purchase
         </Button>
       </main>
