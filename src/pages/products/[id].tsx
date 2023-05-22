@@ -46,6 +46,8 @@ const ProductDetails: NextPage<ProductDetailsProps> = ({ id }) => {
   const content = product.contents[0];
   const { body, images } = product;
 
+  const imagesLength = images?.images_url?.length ?? 0;
+
   const versionDatas = product.contents.map((content) => ({
     version: content.version,
     code_url: content.code_url,
@@ -118,7 +120,9 @@ const ProductDetails: NextPage<ProductDetailsProps> = ({ id }) => {
 
           <div
             id="product-assets"
-            className="relative mt-8 flex h-52 w-full mobile-lg:h-64"
+            className={`mt-8 flex h-52 w-full flex-row items-center gap-x-4 overflow-x-auto overflow-y-clip mobile-lg:h-64 ${
+              imagesLength === 1 ? "justify-center" : "justify-start"
+            }`}
           >
             {images?.images_url?.map((url, index) => (
               <ProductAssetImg alt={product.title} url={url} key={index} />
@@ -148,7 +152,16 @@ interface ProductAssetImgProps {
 }
 
 const ProductAssetImg: React.FC<ProductAssetImgProps> = ({ url, alt }) => {
-  return <Image className="md:max-w-sm" src={url} alt={alt} fill priority />;
+  return (
+    <Image
+      className={`md:max-w-sm`}
+      src={url}
+      alt={alt}
+      width={640}
+      height={240}
+      priority
+    />
+  );
 };
 
 export default ProductDetails;
