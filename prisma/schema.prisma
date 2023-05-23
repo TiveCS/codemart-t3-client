@@ -78,7 +78,7 @@ model Feedback {
     productId    String
     reviewerId   String
     content      String
-    isRecomended Boolean
+    isRecomended Boolean @default(true)
 
     product  Product @relation(fields: [productId], references: [id])
     reviewer User    @relation(fields: [reviewerId], references: [id])
