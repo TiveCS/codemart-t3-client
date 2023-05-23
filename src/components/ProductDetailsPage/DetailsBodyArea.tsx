@@ -3,6 +3,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { Button } from "../Button";
 import DetailsBodyButtonSelector from "./DetailsBodyButtonSelector";
+import FeedbackInput from "../FeedbackInput";
+import FeedbackForm from "../FeedbackForm";
+import { Feedback } from "@prisma/client";
+import FeedbackCard from "../FeedbackCard";
 
 interface DetailsBodyAreaProps {
   productId: string;
@@ -28,6 +32,7 @@ const DetailsBodyArea: React.FC<DetailsBodyAreaProps> = ({
   const isOwner = ownerId === session?.user.id;
 
   const [section, setSection] = useState<SectionAreas>("description");
+  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
 
   return (
     <>
@@ -101,6 +106,20 @@ const DetailsBodyArea: React.FC<DetailsBodyAreaProps> = ({
           <Link href={`/products/[id]/edit`} as={`/products/${productId}/edit`}>
             <Button style="outline">Edit Details</Button>
           </Link>
+        </div>
+      )}
+
+      {section === "feedbacks" && (
+        <div id="product-feedbacks">
+          <FeedbackForm />
+
+          <hr />
+
+          <div id="feedback-list">
+            {feedbacks.map((feedback) => (
+              <FeedbackCard key={feedback.id} feedback={feedback} />
+            ))}
+          </div>
         </div>
       )}
     </>
