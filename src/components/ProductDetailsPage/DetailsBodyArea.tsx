@@ -111,7 +111,7 @@ const DetailsBodyArea: React.FC<DetailsBodyAreaProps> = ({
 
       {section === "feedbacks" && (
         <div id="product-feedbacks">
-          <FeedbackForm />
+          <FeedbackForm productId={productId} />
 
           <hr />
 
