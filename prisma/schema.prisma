@@ -84,6 +84,8 @@ model Feedback {
     reviewer User    @relation(fields: [reviewerId], references: [id])
 
     created_at DateTime @default(now())
+
+    @@unique([productId, reviewerId])
 }
 
 // Necessary for Next auth
