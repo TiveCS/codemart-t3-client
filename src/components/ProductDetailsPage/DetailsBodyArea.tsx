@@ -1,7 +1,11 @@
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
+import { type FeedbacksDataType } from "~/types/FeedbacksData";
+import { api } from "~/utils/api";
 import { Button } from "../Button";
+import FeedbackCard from "../FeedbackCard";
+import FeedbackForm from "../FeedbackForm";
 import DetailsBodyButtonSelector from "./DetailsBodyButtonSelector";
 
 interface DetailsBodyAreaProps {
@@ -25,9 +29,24 @@ const DetailsBodyArea: React.FC<DetailsBodyAreaProps> = ({
   hasDownloadAccess,
 }) => {
   const { data: session } = useSession();
+  const isAuthed = !!session?.user;
   const isOwner = ownerId === session?.user.id;
 
   const [section, setSection] = useState<SectionAreas>("description");
+  const [feedbackPage, setFeedbackPage] = useState(0);
+
+  const getFeedbacks = api.feedbacks.getFeedbacks.useInfiniteQuery({
+    productId,
+  });
+
+  const { data, isLoading: isFeedbackLoading } = getFeedbacks;
+
+  const feedbacks: FeedbacksDataType[] | undefined = data?.pages[feedbackPage];
+  const hasFeedbacks = feedbacks && feedbacks?.length !== 0;
+
+  const showMoreFeedbacks = () => {
+    setFeedbackPage(feedbackPage + 1);
+  };
 
   return (
     <>
@@ -101,6 +120,28 @@ const DetailsBodyArea: React.FC<DetailsBodyAreaProps> = ({
           <Link href={`/products/[id]/edit`} as={`/products/${productId}/edit`}>
             <Button style="outline">Edit Details</Button>
           </Link>
+        </div>
+      )}
+
+      {section === "feedbacks" && (
+        <div id="product-feedbacks">
+          {isAuthed && !isOwner && (
+            <FeedbackForm productId={productId} getFeedbacks={getFeedbacks} />
+          )}
+
+          <hr />
+
+          <div id="feedback-list" className="mt-12 flex flex-col gap-y-6">
+            {hasFeedbacks ? (
+              feedbacks.map((feedback) => (
+                <FeedbackCard key={feedback.id} feedback={feedback} />
+              ))
+            ) : (
+              <div className="text-center">
+                <p>No feedbacks</p>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </>

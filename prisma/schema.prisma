@@ -35,6 +35,7 @@ model Product {
     updated_at DateTime @updatedAt
 
     purchases PurchaseHistory[]
+    feedbacks Feedback[]
 }
 
 model ProductContent {
@@ -70,6 +71,21 @@ model PurchaseHistory {
     owner   User    @relation(fields: [userId], references: [id])
 
     created_at DateTime @default(now())
+}
+
+model Feedback {
+    id           String  @id @default(cuid())
+    productId    String
+    reviewerId   String
+    content      String
+    isRecomended Boolean @default(true)
+
+    product  Product @relation(fields: [productId], references: [id])
+    reviewer User    @relation(fields: [reviewerId], references: [id])
+
+    created_at DateTime @default(now())
+
+    @@unique([productId, reviewerId])
 }
 
 // Necessary for Next auth
@@ -109,6 +125,7 @@ model User {
     sessions      Session[]
     products      Product[]
     purchases     PurchaseHistory[]
+    feedbacks     Feedback[]
 }
 
 model VerificationToken {
