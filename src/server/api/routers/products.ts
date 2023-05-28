@@ -13,12 +13,14 @@ export const productsRouter = createTRPCRouter({
         price: z.number().min(0),
         body: z.string(),
         categories: z.array(z.string()),
+        demoUrl: z.string().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const { session, prisma } = ctx;
+      const { prisma } = ctx;
 
-      const { id, title, description, price, body, categories } = input;
+      const { id, title, description, price, body, categories, demoUrl } =
+        input;
 
       // TODO validate if the user is the owner of the product
 
@@ -32,6 +34,7 @@ export const productsRouter = createTRPCRouter({
           price,
           body,
           categories,
+          demo_url: demoUrl,
         },
       });
     }),
@@ -45,9 +48,7 @@ export const productsRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const { session, prisma, s3 } = ctx;
-
-      // TODO validate if the user is the owner of the product
+      const { prisma, s3 } = ctx;
 
       const { version, codeFile, productId } = input;
 
@@ -92,6 +93,7 @@ export const productsRouter = createTRPCRouter({
         price: z.number().min(0),
         body: z.string(),
         categories: z.array(z.string()),
+        demoUrl: z.string().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -107,6 +109,7 @@ export const productsRouter = createTRPCRouter({
         coverImgFile,
         assets,
         categories,
+        demoUrl,
       } = input;
 
       const [codeUploadResult, coverImgUploadResult, assetsUploadResult] =
@@ -133,6 +136,7 @@ export const productsRouter = createTRPCRouter({
           price,
           cover_url: coverImgUrl,
           body,
+          demo_url: demoUrl,
           images: {
             create: {
               images_url: assetsUrl,

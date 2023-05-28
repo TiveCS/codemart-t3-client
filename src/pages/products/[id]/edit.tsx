@@ -3,14 +3,12 @@ import { getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { FormEvent, useState } from "react";
+import { useState, type FormEvent } from "react";
 import { Button } from "~/components/Button";
-import FileImageInput from "~/components/Forms/FileImageInput";
 import FormCategoryInput from "~/components/Forms/FormCategoryInput";
 import FormInput from "~/components/Forms/FormInput";
 import TextAreaInput from "~/components/Forms/TextAreaInput";
 import useInput from "~/hooks/useInput";
-import useMultiFileInput from "~/hooks/useMultiFileInput";
 import { authOptions } from "~/server/auth";
 import { api } from "~/utils/api";
 import useToastsStore from "~/zustand/toastsStore";
@@ -48,17 +46,9 @@ const ProductEditPage: NextPage<ProductEditPageProps> = ({ id }) => {
 
   const [category, onCategoryChangeHandler, setCategory] = useInput("");
   const [categories, setCategories] = useState<string[]>([]);
+  const [demoUrl, onDemoUrlChangeHandler] = useInput("");
 
   const [isPublishing, setIsPublishing] = useState(false);
-
-  const {
-    files: assets,
-    encodedDatas: encodedAssets,
-    onFileChangeHandler: onAssetsChangeHandler,
-    onDeleteFileHandler: onAssetsDeleteHandler,
-    onFileDropHandler: onAssetsDropHandler,
-    isEncoding: isEncodingAssets,
-  } = useMultiFileInput({});
 
   const editProduct = api.products.editProduct.useMutation({
     onMutate: () => {
@@ -97,7 +87,6 @@ const ProductEditPage: NextPage<ProductEditPageProps> = ({ id }) => {
   const isValidInput = () => {
     const isValidPrice = price !== undefined && price >= 0;
     const isValidCategories = categories.length > 0;
-    // const isValidAssets = encodedAssets.length > 0;
 
     if (!isValidPrice) {
       addToast({
@@ -115,21 +104,7 @@ const ProductEditPage: NextPage<ProductEditPageProps> = ({ id }) => {
       return false;
     }
 
-    // if (!isValidAssets) {
-    //   addToast({
-    //     message: "Please upload at least one asset.",
-    //     variant: "danger",
-    //   });
-    //   return false;
-    // }
-
-    if (
-      !title ||
-      !description ||
-      !isValidPrice ||
-      !isValidCategories
-      // !isValidAssets
-    ) {
+    if (!title || !description || !isValidPrice || !isValidCategories) {
       addToast({
         message: "Please fill all the required fields.",
         variant: "danger",
@@ -154,6 +129,7 @@ const ProductEditPage: NextPage<ProductEditPageProps> = ({ id }) => {
       price: Number(price),
       categories,
       body,
+      demoUrl,
     });
 
     await router.push("/products/[id]", `/products/${product.id}`);
@@ -223,16 +199,12 @@ const ProductEditPage: NextPage<ProductEditPageProps> = ({ id }) => {
         </div>
 
         <div className="mt-4 flex flex-col gap-y-6">
-          {/* <FileImageInput
-            name="assets"
-            label="Assets"
-            files={assets}
-            onChangeHandler={onAssetsChangeHandler}
-            onDeleteHandler={onAssetsDeleteHandler}
-            onDropHandler={onAssetsDropHandler}
-            isEncoding={isEncodingAssets}
-            required
-          /> */}
+          <FormInput
+            name="demo-url"
+            label="Demo URL"
+            placeholder="https://example.com/demo"
+            onChangeHandler={onDemoUrlChangeHandler}
+          />
 
           <TextAreaInput
             name="body"

@@ -50,6 +50,9 @@ const ProductDetails: NextPage<ProductDetailsProps> = ({ id }) => {
   const hasDownloadAccess =
     product?.price === 0 || purchase?.status === "capture" || isOwner;
 
+  const demoUrl = product.demo_url;
+  const hasDemoUrl = demoUrl !== null;
+
   const versionDatas = product.contents.map((content) => ({
     version: content.version,
     code_url: content.code_url,
@@ -111,6 +114,12 @@ const ProductDetails: NextPage<ProductDetailsProps> = ({ id }) => {
                     as={`/products/${id}/update`}
                   >
                     <Button style="text">Post an Update</Button>
+                  </Link>
+                )}
+
+                {hasDemoUrl && (
+                  <Link href={demoUrl} target="_blank">
+                    <Button style="text">Demo</Button>
                   </Link>
                 )}
               </div>

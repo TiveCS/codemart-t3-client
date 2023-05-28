@@ -20,6 +20,7 @@ model Product {
     description String?
     price       Int     @default(0)
 
+    demo_url   String?
     cover_url  String?
     contents   ProductContent[]
     categories String[]
