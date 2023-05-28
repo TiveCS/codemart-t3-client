@@ -33,6 +33,7 @@ const ProductEditPage: NextPage<ProductEditPageProps> = ({ id }) => {
           setPrice(data.price);
           setCategories(data.categories);
           setBody(data.body ?? "");
+          setDemoUrl(data.demo_url ?? "");
         }
       },
     }
@@ -46,7 +47,22 @@ const ProductEditPage: NextPage<ProductEditPageProps> = ({ id }) => {
 
   const [category, onCategoryChangeHandler, setCategory] = useInput("");
   const [categories, setCategories] = useState<string[]>([]);
-  const [demoUrl, onDemoUrlChangeHandler] = useInput("");
+  const [demoUrl, onDemoUrlChangeHandler, setDemoUrl, isDemoUrlValid] =
+    useInput("", {
+      isRequired: false,
+      validate: (value) => {
+        if (value.trim() === "") {
+          return true;
+        }
+
+        try {
+          new URL(value);
+          return true;
+        } catch {
+          return false;
+        }
+      },
+    });
 
   const [isPublishing, setIsPublishing] = useState(false);
 
@@ -104,6 +120,14 @@ const ProductEditPage: NextPage<ProductEditPageProps> = ({ id }) => {
       return false;
     }
 
+    if (!isDemoUrlValid) {
+      addToast({
+        message: "Please enter a valid demo url.",
+        variant: "danger",
+      });
+      return false;
+    }
+
     if (!title || !description || !isValidPrice || !isValidCategories) {
       addToast({
         message: "Please fill all the required fields.",
@@ -129,7 +153,7 @@ const ProductEditPage: NextPage<ProductEditPageProps> = ({ id }) => {
       price: Number(price),
       categories,
       body,
-      demoUrl,
+      demoUrl: demoUrl.trim() === "" ? null : demoUrl,
     });
 
     await router.push("/products/[id]", `/products/${product.id}`);
@@ -203,6 +227,7 @@ const ProductEditPage: NextPage<ProductEditPageProps> = ({ id }) => {
             name="demo-url"
             label="Demo URL"
             placeholder="https://example.com/demo"
+            value={demoUrl}
             onChangeHandler={onDemoUrlChangeHandler}
           />
 
