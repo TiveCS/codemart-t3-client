@@ -48,6 +48,7 @@ const ProductEditPage: NextPage<ProductEditPageProps> = ({ id }) => {
 
   const [category, onCategoryChangeHandler, setCategory] = useInput("");
   const [categories, setCategories] = useState<string[]>([]);
+  const [demoUrl, onDemoUrlChangeHandler] = useInput("");
 
   const [isPublishing, setIsPublishing] = useState(false);
 
@@ -154,6 +155,7 @@ const ProductEditPage: NextPage<ProductEditPageProps> = ({ id }) => {
       price: Number(price),
       categories,
       body,
+      demoUrl,
     });
 
     await router.push("/products/[id]", `/products/${product.id}`);
@@ -233,6 +235,13 @@ const ProductEditPage: NextPage<ProductEditPageProps> = ({ id }) => {
             isEncoding={isEncodingAssets}
             required
           /> */}
+
+          <FormInput
+            name="demo-url"
+            label="Demo URL"
+            placeholder="https://example.com/demo"
+            onChangeHandler={onDemoUrlChangeHandler}
+          />
 
           <TextAreaInput
             name="body"

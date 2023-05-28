@@ -39,6 +39,7 @@ const SellPage: NextPage = () => {
 
   const [category, onCategoryChangeHandler, setCategory] = useInput("");
   const [categories, setCategories] = useState<string[]>([]);
+  const [demoUrl, onDemoUrlChangeHandler] = useInput("");
 
   const {
     files: assets,
@@ -118,6 +119,7 @@ const SellPage: NextPage = () => {
       body: DOMPurify.sanitize(body),
       assets: encodedAssets,
       categories,
+      demoUrl,
     });
 
     mutate
@@ -208,6 +210,13 @@ const SellPage: NextPage = () => {
           </div>
 
           <div className="mt-4">
+            <FormInput
+              name="demo_url"
+              label="Demo URL"
+              placeholder="https://example.com/demo"
+              onChangeHandler={onDemoUrlChangeHandler}
+            />
+
             <FileInput
               name="cover_img_file"
               label="Cover Image"

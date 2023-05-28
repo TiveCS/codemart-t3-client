@@ -120,6 +120,17 @@ const DetailsBodyArea: React.FC<DetailsBodyAreaProps> = ({
           <Link href={`/products/[id]/edit`} as={`/products/${productId}/edit`}>
             <Button style="outline">Edit Details</Button>
           </Link>
+          <Link
+            href={"/products/[id]/delete"}
+            as={`/products/${productId}/delete`}
+          >
+            <Button
+              className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+              style="outline"
+            >
+              Delete Product
+            </Button>
+          </Link>
         </div>
       )}
 
