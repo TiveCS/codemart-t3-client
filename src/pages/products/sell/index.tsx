@@ -39,7 +39,21 @@ const SellPage: NextPage = () => {
 
   const [category, onCategoryChangeHandler, setCategory] = useInput("");
   const [categories, setCategories] = useState<string[]>([]);
-  const [demoUrl, onDemoUrlChangeHandler] = useInput("");
+  const [demoUrl, onDemoUrlChangeHandler, _, isDemoUrlValid] = useInput("", {
+    isRequired: false,
+    validate: (value) => {
+      if (value.trim() === "") {
+        return true;
+      }
+
+      try {
+        new URL(value);
+        return true;
+      } catch {
+        return false;
+      }
+    },
+  });
 
   const {
     files: assets,
@@ -68,6 +82,14 @@ const SellPage: NextPage = () => {
     if (!isValidCategories) {
       addToast({
         message: "Please write at least one category.",
+        variant: "danger",
+      });
+      return false;
+    }
+
+    if (!isDemoUrlValid) {
+      addToast({
+        message: "Please enter a valid demo url.",
         variant: "danger",
       });
       return false;
@@ -119,7 +141,7 @@ const SellPage: NextPage = () => {
       body: DOMPurify.sanitize(body),
       assets: encodedAssets,
       categories,
-      demoUrl,
+      demoUrl: demoUrl.trim() === "" ? null : demoUrl.trim(),
     });
 
     mutate
