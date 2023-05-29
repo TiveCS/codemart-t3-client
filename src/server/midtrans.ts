@@ -3,4 +3,4 @@ import { env } from "~/env.mjs";
 
 const isProduction = env.NODE_ENV === "production";
 
-export const midtrans = new MidtransNode(isProduction, env.MIDTRANS_SERVER_KEY);
+export const midtrans = new MidtransNode(false, env.MIDTRANS_SERVER_KEY);
