@@ -116,13 +116,16 @@ const ProductDetails: NextPage<ProductDetailsProps> = ({ id }) => {
             <hr />
           </div>
 
-          <div
-            id="product-assets"
-            className="relative mt-8 flex h-52 w-full mobile-lg:h-64"
-          >
-            {images?.images_url?.map((url, index) => (
-              <ProductAssetImg alt={product.title} url={url} key={index} />
-            ))}
+          <div id="slider" className="">
+            <div
+              //relative mt-8 flex h-52 w-full mobile-lg:h-64
+              id="product-assets"
+              className="relative mt-8 flex h-52 w-full flex-wrap justify-center gap-4"
+            >
+              {images?.images_url?.map((url, index) => (
+                <ProductAssetImg alt={product.title} url={url} key={index} />
+              ))}
+            </div>
           </div>
 
           <div className="mt-6">
