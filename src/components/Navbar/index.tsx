@@ -19,6 +19,9 @@ const Navbar: React.FC = () => {
           <Link href={"/products"}>
             <Button style={"text"}>Browse</Button>
           </Link>
+          <Link href={"/request"}>
+            <Button style={"text"}>Request Product</Button>
+          </Link>
         </div>
       </div>
       <AuthArea />
