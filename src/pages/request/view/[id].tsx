@@ -1,4 +1,5 @@
 import { type NextPage } from "next";
+import Head from "next/head";
 import { api } from "~/utils/api";
 
 interface RequestThreadPageProps {
@@ -31,7 +32,13 @@ const RequestThreadPage: NextPage<RequestThreadPageProps> = ({
 
   return (
     <>
+      <Head>
+        <title>{thread.title} | CodeMart</title>
+      </Head>
+
       <p>{thread.title}</p>
+
+      <p>{thread.content}</p>
     </>
   );
 };
