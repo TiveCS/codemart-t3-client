@@ -16,29 +16,6 @@ datasource db {
     shadowDatabaseUrl = env("DATABASE_URL_NON_POOLING")
 }
 
-model RequestThread {
-    id        String               @id @default(cuid())
-    title     String
-    content   String
-    authorId  String
-    budget    Int
-    author    User                 @relation(fields: [authorId], references: [id])
-    replies   RequestThreadReply[]
-    createdAt DateTime             @default(now())
-    updatedAt DateTime             @updatedAt
-}
-
-model RequestThreadReply {
-    id        String        @id @default(cuid())
-    content   String
-    authorId  String
-    author    User          @relation(fields: [authorId], references: [id])
-    threadId  String
-    thread    RequestThread @relation(fields: [threadId], references: [id])
-    createdAt DateTime      @default(now())
-    updatedAt DateTime      @updatedAt
-}
-
 model Product {
     id          String  @id @default(cuid())
     title       String
@@ -142,18 +119,16 @@ model Session {
 }
 
 model User {
-    id             String               @id @default(cuid())
-    name           String?
-    email          String?              @unique
-    emailVerified  DateTime?
-    image          String?
-    accounts       Account[]
-    sessions       Session[]
-    products       Product[]
-    purchases      PurchaseHistory[]
-    feedbacks      Feedback[]
-    requestThreads RequestThread[]
-    requestReplies RequestThreadReply[]
+    id            String            @id @default(cuid())
+    name          String?
+    email         String?           @unique
+    emailVerified DateTime?
+    image         String?
+    accounts      Account[]
+    sessions      Session[]
+    products      Product[]
+    purchases     PurchaseHistory[]
+    feedbacks     Feedback[]
 }
 
 model VerificationToken {
