@@ -5,6 +5,7 @@ import { Button } from "../Button";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import AvatarDropdown from "./AvatarDropdown";
+import { EnvelopeIcon } from "@heroicons/react/24/outline";
 
 const AuthArea: React.FC = () => {
   const { data: session, status } = useSession();
@@ -21,31 +22,49 @@ const AuthArea: React.FC = () => {
         </>
       )}
 
-      <div
-        className="hidden cursor-pointer gap-x-4 lg:flex"
-        onClick={() => setIsOpen(!isOpen)}
-      >
+      <div className="hidden items-center gap-x-4 lg:flex">
         {status === "authenticated" && (
           <>
-            <p
-              id="user-name"
-              className="hidden items-center font-medium md:flex"
+            <Link
+              href={"/users/[id]/chat"}
+              as={`/users/${session.user.id}/chat`}
+              className="cursor-pointer"
             >
-              {session.user.name}
-            </p>
+              <EnvelopeIcon className="mr-6 h-6 w-6 text-gray-900" />
 
-            {session.user.image && (
-              <Image
-                id="user-avatar"
-                src={session.user.image}
-                alt={""}
-                width={48}
-                height={48}
-                className="h-10 w-10 rounded-full md:max-w-fit"
-              />
-            )}
+              {/* TODO: Check if user is authed and there are unread messages */}
 
-            {isOpen && <AvatarDropdown />}
+              {/* {true && (
+                <span className="absolute z-10 flex h-4 w-4 translate-x-4 -translate-y-2.5 items-center justify-center rounded-full bg-red-600 text-sm text-white">
+                  3
+                </span>
+              )} */}
+            </Link>
+
+            <div
+              className="flex cursor-pointer gap-x-4"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              <p
+                id="user-name"
+                className="hidden items-center font-medium md:flex"
+              >
+                {session.user.name}
+              </p>
+
+              {session.user.image && (
+                <Image
+                  id="user-avatar"
+                  src={session.user.image}
+                  alt={""}
+                  width={48}
+                  height={48}
+                  className="h-10 w-10 rounded-full md:max-w-fit"
+                />
+              )}
+
+              {isOpen && <AvatarDropdown />}
+            </div>
           </>
         )}
       </div>

@@ -50,6 +50,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </h6>
           </Link>
 
+          <Link
+            href={"/users/[id]"}
+            as={`/users/${product.owner.id}`}
+            className="group"
+          >
+            <p className="text-sm font-medium text-gray-900 group-hover:text-codemart-500">
+              {product.owner.name}
+            </p>
+          </Link>
+
           <p className="text-sm text-gray-600">{product.description}</p>
 
           <div className="mt-2 flex flex-row gap-x-1.5">

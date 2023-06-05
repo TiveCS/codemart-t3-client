@@ -1,4 +1,4 @@
-import { useState, FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 
 function useFileInput(): [
   File | null,
@@ -10,7 +10,7 @@ function useFileInput(): [
     event.preventDefault();
 
     const file = event.currentTarget.files?.item(0);
-    if (!file) return
+    if (!file) return;
 
     setFile(file);
   }
