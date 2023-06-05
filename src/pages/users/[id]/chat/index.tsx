@@ -35,9 +35,18 @@ const UserChatList: NextPage<UserChatListProps> = ({ userId }) => {
         <title>Your Chat | CodeMart</title>
       </Head>
 
-      <div id="user-chat" className="mx-auto max-w-6xl bg-white shadow">
+      <div
+        id="user-chat"
+        className="mx-auto min-h-md max-w-6xl bg-white shadow"
+      >
+        <div className="px-8 py-6">
+          <p className="mb-4 text-xl font-medium">Chat List</p>
+
+          <hr />
+        </div>
+
         {isChatEmpty && (
-          <div id="chat-empty">
+          <div id="chat-empty" className="px-8 pb-6">
             <h3>No chats yet</h3>
             <p>Start a new chat by clicking on a user</p>
           </div>

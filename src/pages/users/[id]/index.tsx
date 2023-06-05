@@ -14,6 +14,9 @@ interface UserPageProps {
 }
 
 const UserPage: NextPage<UserPageProps> = ({ userId }) => {
+  const { data: findChatWithUserData } = api.chat.findChatWithUser.useQuery({
+    userId,
+  });
   const newChatThreadId = createId();
   const [newChatIsLoading, setNewChatIsLoading] = useState(false);
 
@@ -47,6 +50,10 @@ const UserPage: NextPage<UserPageProps> = ({ userId }) => {
     if (!session) {
       e.preventDefault();
       return void router.push("/auth");
+    }
+
+    if (findChatWithUserData) {
+      return;
     }
 
     const audienceIds = [session?.user.id, user.id];
@@ -89,7 +96,9 @@ const UserPage: NextPage<UserPageProps> = ({ userId }) => {
           ) : (
             <Link
               href={"/chat/[id]"}
-              as={`/chat/${newChatThreadId}`}
+              as={`/chat/${
+                findChatWithUserData ? findChatWithUserData.id : newChatThreadId
+              }`}
               className="md:col-span-2"
               onClick={handleSendMessage}
             >

@@ -90,4 +90,33 @@ export const chatRouter = createTRPCRouter({
         },
       });
     }),
+
+  findChatWithUser: protectedProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { prisma, session } = ctx;
+      const { userId } = input;
+
+      const threadId = await prisma.chatThread.findFirst({
+        where: {
+          audienceList: {
+            some: {
+              id: userId,
+              AND: {
+                id: session.user.id,
+              },
+            },
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      return threadId;
+    }),
 });

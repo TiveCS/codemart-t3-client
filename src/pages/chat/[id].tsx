@@ -30,6 +30,8 @@ const ChatThreadPage: NextPage<ChatThreadPageProps> = ({ threadId }) => {
       await fetch("/api/socket");
 
       socket?.on("newIncomingMessage", async () => {
+        console.log("newIncomingMessage");
+
         await chatThread.refetch();
         messagesContainer.current?.scrollTo({
           top: messagesContainer.current.scrollHeight,
@@ -107,7 +109,7 @@ const ChatThreadPage: NextPage<ChatThreadPageProps> = ({ threadId }) => {
         <div
           id="chat-messages"
           ref={messagesContainer}
-          className="row-span-6 grid max-h-md grid-flow-row gap-y-4 overflow-y-scroll"
+          className="flex max-h-md flex-col gap-y-4 overflow-y-scroll"
         >
           {messages.map((message) => (
             <ChatMessageItem

@@ -34,11 +34,11 @@ const AuthArea: React.FC = () => {
 
               {/* TODO: Check if user is authed and there are unread messages */}
 
-              {true && (
+              {/* {true && (
                 <span className="absolute z-10 flex h-4 w-4 translate-x-4 -translate-y-2.5 items-center justify-center rounded-full bg-red-600 text-sm text-white">
                   3
                 </span>
-              )}
+              )} */}
             </Link>
 
             <div
