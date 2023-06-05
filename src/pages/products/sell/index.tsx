@@ -17,16 +17,52 @@ import { authOptions } from "~/server/auth";
 import { api } from "~/utils/api";
 import useToastsStore from "~/zustand/toastsStore";
 
+const validateAlphaNumeric = (value: string) => {
+  const regex = /^[a-zA-Z0-9\s,.]*$/;
+  return regex.test(value);
+};
+
+const validateNotEmpty = (value: string) => {
+  return value.trim() !== "";
+};
+
+const validateText = (value: string) => {
+  return validateNotEmpty(value) && validateAlphaNumeric(value);
+};
+
 const SellPage: NextPage = () => {
   const router = useRouter();
 
   const addToast = useToastsStore.getState().addToast;
   const publish = api.products.publish.useMutation();
 
-  const [title, onTitleChangeHandler] = useInput("");
-  const [description, onDescriptionChangeHandler] = useInput("");
-  const [version, onVersionChangeHandler] = useInput("1.0.0");
-  const [price, onPriceChangeHandler] = useInput(0);
+  const {
+    value: title,
+    onValueChangeHandler: onTitleChangeHandler,
+    isValid: isTitleValueValid,
+  } = useInput("", {
+    isRequired: true,
+    validate: (value) => validateText(value),
+  });
+
+  const {
+    value: description,
+    onValueChangeHandler: onDescriptionChangeHandler,
+    isValid: isDescriptionValueValid,
+  } = useInput("", {
+    isRequired: true,
+    validate: (value) => validateText(value),
+  });
+  const {
+    value: version,
+    onValueChangeHandler: onVersionChangeHandler,
+    isValid: isVersionValueValid,
+  } = useInput("1.0.0", {
+    isRequired: false,
+    validate: (value) => validateNotEmpty(value),
+  });
+  const { value: price, onValueChangeHandler: onPriceChangeHandler } =
+    useInput(0);
   const [codeFile, onCodeFileChangeHandler] = useFileInputEncoded({
     chunkSize: 1024 * 1024 * 2.5,
     maxFileSize: 50,
@@ -35,15 +71,31 @@ const SellPage: NextPage = () => {
     chunkSize: 1024 * 1024 * 3,
     maxFileSize: 1,
   });
-  const [body, onBodyChangeHandler] = useInput("");
+  const { value: body, onValueChangeHandler: onBodyChangeHandler } = useInput(
+    "",
+    {
+      isRequired: false,
+    }
+  );
 
-  const [category, onCategoryChangeHandler, setCategory] = useInput("");
+  const {
+    value: category,
+    onValueChangeHandler: onCategoryChangeHandler,
+    setValue: setCategory,
+  } = useInput("", {
+    isRequired: false,
+    validate: (value) => validateText(value),
+  });
   const [categories, setCategories] = useState<string[]>([]);
-  const [demoUrl, onDemoUrlChangeHandler, _, isDemoUrlValid] = useInput("", {
+  const {
+    value: demoUrl,
+    onValueChangeHandler: onDemoUrlChangeHandler,
+    isValid: isDemoUrlValid,
+  } = useInput("", {
     isRequired: false,
     validate: (value) => {
       if (value.trim() === "") {
-        return true;
+        return false;
       }
 
       try {
@@ -67,6 +119,11 @@ const SellPage: NextPage = () => {
   const [isPublishing, setIsPublishing] = useState(false);
 
   const isValidInput = () => {
+    const isValidTitle = title !== undefined && isTitleValueValid;
+    const isValidDescription =
+      description !== undefined && isDescriptionValueValid;
+    const isValidVersion = version.length === 0 ? true : isVersionValueValid;
+
     const isValidPrice = price !== undefined && price >= 0;
     const isValidCategories = categories.length > 0;
     const isValidAssets = encodedAssets.length > 0;
@@ -103,17 +160,27 @@ const SellPage: NextPage = () => {
       return false;
     }
 
-    if (
-      !title ||
-      !description ||
-      !codeFile ||
-      !coverImgFile ||
-      !isValidPrice ||
-      !isValidAssets ||
-      !isValidCategories
-    ) {
+    if (!isValidTitle) {
       addToast({
-        message: "Please fill all the required fields.",
+        message: "Please enter a valid title.",
+        variant: "danger",
+      });
+      return false;
+    }
+
+    if (!isValidDescription) {
+      addToast({
+        message: "Please enter a valid description.",
+        variant: "danger",
+      });
+      return false;
+    }
+
+    if (!isValidVersion) {
+      console.log({ version, isValidVersion, isVersionValueValid });
+
+      addToast({
+        message: "Please enter a valid version.",
         variant: "danger",
       });
       return false;

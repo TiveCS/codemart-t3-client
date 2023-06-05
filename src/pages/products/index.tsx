@@ -7,7 +7,9 @@ import CategoryCheckbox from "~/components/BrowsePage/categories/CategoryCheckbo
 import useInput from "~/hooks/useInput";
 
 const ProductBrowse: NextPage = () => {
-  const [search, onSearchChange] = useInput<string | undefined>(undefined);
+  const { value: search, onValueChangeHandler: onSearchChange } = useInput<
+    string | undefined
+  >(undefined);
   const [categories, setCategories] = useState<string[]>([]);
 
   return (

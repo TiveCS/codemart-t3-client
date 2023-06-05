@@ -8,12 +8,14 @@ interface UseInputOptions<T> {
 function useInput<T>(
   defaultValue: T,
   options?: UseInputOptions<T>
-): [
-  T,
-  (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void,
-  (value: SetStateAction<T>) => void,
-  boolean
-] {
+): {
+  value: T;
+  onValueChangeHandler: (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void;
+  setValue: (value: SetStateAction<T>) => void;
+  isValid: boolean;
+} {
   const [value, setValue] = useState<T>(defaultValue);
   const [isValid, setIsValid] = useState(true);
 
@@ -38,7 +40,7 @@ function useInput<T>(
     setValue(newValue);
   }
 
-  return [value, onValueChangeHandler, setValue, isValid];
+  return { value, onValueChangeHandler, setValue, isValid };
 }
 
 export default useInput;
