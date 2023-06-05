@@ -16,12 +16,22 @@ const config = {
         "codemart-900": "#1742B7",
       },
       minHeight: {
+        xl: "40rem",
+        lg: "32rem",
+        md: "28rem",
         sm: "24rem",
         xs: "20rem",
         "2xs": "16rem",
         "3xs": "12rem",
         "4xs": "10rem",
         us: "8rem",
+      },
+      maxHeight: {
+        xl: "40rem",
+        lg: "32rem",
+        md: "28rem",
+        sm: "24rem",
+        xs: "20rem",
       },
       maxWidth: {
         "2xs": "16rem",

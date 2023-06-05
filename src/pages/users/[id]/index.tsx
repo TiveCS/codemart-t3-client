@@ -3,16 +3,35 @@ import { useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import React, { useState } from "react";
 import { Button } from "~/components/Button";
 import { api } from "~/utils/api";
+import { createId } from "@paralleldrive/cuid2";
 
 interface UserPageProps {
   userId: string;
 }
 
 const UserPage: NextPage<UserPageProps> = ({ userId }) => {
+  const newChatThreadId = createId();
+  const [newChatIsLoading, setNewChatIsLoading] = useState(false);
+
   const { data: session } = useSession();
   const { data: user, isLoading } = api.users.getUserById.useQuery({ userId });
+  const router = useRouter();
+  const newChatThread = api.chat.newChatThread.useMutation({
+    onSuccess: () => {
+      setNewChatIsLoading(false);
+    },
+    onError: (error) => {
+      console.log(error);
+      setNewChatIsLoading(false);
+    },
+    onMutate: () => {
+      setNewChatIsLoading(true);
+    },
+  });
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -23,6 +42,17 @@ const UserPage: NextPage<UserPageProps> = ({ userId }) => {
   }
 
   const isSameUser = session?.user.id === user.id;
+
+  const handleSendMessage = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!session) {
+      e.preventDefault();
+      return void router.push("/auth");
+    }
+
+    const audienceIds = [session?.user.id, user.id];
+
+    void newChatThread.mutate({ audienceIds, threadId: newChatThreadId });
+  };
 
   return (
     <>
@@ -48,13 +78,24 @@ const UserPage: NextPage<UserPageProps> = ({ userId }) => {
             <p>{user.email}</p>
           </div>
 
-          <Link
-            href={"/users/[id]/chat"}
-            as={`/users/${userId}/chat`}
-            className="md:col-span-2"
-          >
-            <Button>{isSameUser ? "Check Chat" : "Send Message"}</Button>
-          </Link>
+          {isSameUser ? (
+            <Link
+              href={"/users/[id]/chat"}
+              as={`/users/${userId}/chat`}
+              className="md:col-span-2"
+            >
+              <Button>Check Chat</Button>
+            </Link>
+          ) : (
+            <Link
+              href={"/chat/[id]"}
+              as={`/chat/${newChatThreadId}`}
+              className="md:col-span-2"
+              onClick={handleSendMessage}
+            >
+              <Button isLoading={newChatIsLoading}>Send Message</Button>
+            </Link>
+          )}
         </div>
 
         <hr />

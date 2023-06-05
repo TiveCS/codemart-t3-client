@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const usersRouter = createTRPCRouter({
   getUserById: publicProcedure
@@ -20,4 +20,30 @@ export const usersRouter = createTRPCRouter({
 
       return user;
     }),
+
+  getUserChatThreads: protectedProcedure.query(async ({ ctx }) => {
+    const { prisma, session } = ctx;
+    const userId = session.user.id;
+
+    const threads = await prisma.chatThread.findMany({
+      where: {
+        audienceList: {
+          some: {
+            id: userId,
+          },
+        },
+      },
+      include: {
+        audienceList: true,
+        messages: {
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: 1,
+        },
+      },
+    });
+
+    return threads;
+  }),
 });

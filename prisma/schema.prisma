@@ -16,6 +16,27 @@ datasource db {
     shadowDatabaseUrl = env("DATABASE_URL_NON_POOLING")
 }
 
+// CHAT
+
+model ChatThread {
+    id           String        @id @default(cuid())
+    audienceList User[]
+    messages     ChatMessage[]
+}
+
+model ChatMessage {
+    id        String   @id @default(cuid())
+    threadId  String
+    senderId  String
+    content   String
+    createdAt DateTime @default(now())
+
+    thread ChatThread @relation(fields: [threadId], references: [id])
+    sender User       @relation(fields: [senderId], references: [id])
+}
+
+// PRODUCT
+
 model Product {
     id          String  @id @default(cuid())
     title       String
@@ -129,6 +150,8 @@ model User {
     products      Product[]
     purchases     PurchaseHistory[]
     feedbacks     Feedback[]
+    chatThreads   ChatThread[]
+    chatMessages  ChatMessage[]
 }
 
 model VerificationToken {

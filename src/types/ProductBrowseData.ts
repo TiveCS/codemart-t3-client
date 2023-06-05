@@ -6,6 +6,7 @@ export type ProductBrowseData = {
   price: number;
   cover_url: string | null;
   owner: {
+    id: string;
     name: string | null;
   };
 };

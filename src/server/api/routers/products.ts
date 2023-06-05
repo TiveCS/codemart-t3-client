@@ -273,6 +273,7 @@ export const productsRouter = createTRPCRouter({
             cover_url: true,
             owner: {
               select: {
+                id: true,
                 name: true,
               },
             },
