@@ -4,6 +4,31 @@ import { FileInputData, type ProductBrowseData } from "~/types";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const productsRouter = createTRPCRouter({
+  deleteProduct: protectedProcedure
+    .input(
+      z.object({
+        productId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { prisma, session } = ctx;
+      const { productId } = input;
+
+      return await prisma.$transaction([
+        prisma.productContent.deleteMany({
+          where: {
+            productId,
+          },
+        }),
+        prisma.product.deleteMany({
+          where: {
+            id: productId,
+            ownerId: session.user.id,
+          },
+        }),
+      ]);
+    }),
+
   editProduct: protectedProcedure
     .input(
       z.object({
