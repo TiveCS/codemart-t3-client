@@ -15,20 +15,8 @@ import useInput from "~/hooks/useInput";
 import useMultiFileInput from "~/hooks/useMultiFileInput";
 import { authOptions } from "~/server/auth";
 import { api } from "~/utils/api";
+import { validateNotEmpty, validateText } from "~/utils/validation";
 import useToastsStore from "~/zustand/toastsStore";
-
-const validateAlphaNumeric = (value: string) => {
-  const regex = /^[a-zA-Z0-9\s,.]*$/;
-  return regex.test(value);
-};
-
-const validateNotEmpty = (value: string) => {
-  return value.trim() !== "";
-};
-
-const validateText = (value: string) => {
-  return validateNotEmpty(value) && validateAlphaNumeric(value);
-};
 
 const SellPage: NextPage = () => {
   const router = useRouter();
