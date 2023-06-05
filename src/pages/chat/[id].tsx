@@ -18,9 +18,10 @@ const ChatThreadPage: NextPage<ChatThreadPageProps> = ({ threadId }) => {
   const messagesContainer = useRef<HTMLDivElement>(null);
 
   const newChatMessage = api.chat.newChatMessage.useMutation({
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       if (data) {
         socket?.emit("createdMessage", data);
+        await chatThread.refetch({});
       }
     },
   });
@@ -30,13 +31,7 @@ const ChatThreadPage: NextPage<ChatThreadPageProps> = ({ threadId }) => {
       await fetch("/api/socket");
 
       socket?.on("newIncomingMessage", async () => {
-        console.log("newIncomingMessage");
-
-        await chatThread.refetch();
-        messagesContainer.current?.scrollTo({
-          top: messagesContainer.current.scrollHeight,
-          behavior: "smooth",
-        });
+        await chatThread.refetch({});
       });
     };
 
