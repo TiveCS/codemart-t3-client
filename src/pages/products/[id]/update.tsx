@@ -9,6 +9,7 @@ import FormInput from "~/components/Forms/FormInput";
 import useFileInputEncoded from "~/hooks/useFileInputEncoded";
 import useInput from "~/hooks/useInput";
 import { api } from "~/utils/api";
+import { validateText } from "~/utils/validation";
 import useToastsStore from "~/zustand/toastsStore";
 
 const ProductUpdatePage: NextPage = () => {
@@ -42,7 +43,14 @@ const ProductUpdatePage: NextPage = () => {
   });
 
   const [isPublishing, setIsPublishing] = useState<boolean>(false);
-  const [version, onChangeVersion] = useInput("");
+  const {
+    value: version,
+    onValueChangeHandler: onChangeVersion,
+    isValid: isVersionValid,
+  } = useInput("", {
+    isRequired: true,
+    validate: validateText,
+  });
   const [codeFile, onChangeCodeFile] = useFileInputEncoded();
 
   if (!id) {
@@ -72,6 +80,14 @@ const ProductUpdatePage: NextPage = () => {
       return;
     }
 
+    if (!isVersionValid) {
+      addToast({
+        message: "Please enter a valid version",
+        variant: "danger",
+      });
+      return;
+    }
+
     setIsPublishing(true);
     await publish.mutateAsync({
       productId: id,
@@ -86,9 +102,7 @@ const ProductUpdatePage: NextPage = () => {
         <title>Post Update</title>
       </Head>
       <>
-        <p>{product.title}</p>
-
-        <form>
+        <form className="mx-auto flex min-h-md max-w-2xl flex-col gap-y-8 py-8">
           <FormInput
             name="version"
             label="Version"
