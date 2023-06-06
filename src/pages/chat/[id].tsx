@@ -14,7 +14,13 @@ const ChatThreadPage: NextPage<ChatThreadPageProps> = ({ threadId }) => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const { socket } = useSocket();
-  const chatThread = api.chat.getChatThread.useQuery({ threadId });
+  const chatThread = api.chat.getChatThread.useQuery(
+    { threadId },
+    {
+      refetchInterval: 2000,
+      networkMode: "online",
+    }
+  );
   const messagesContainer = useRef<HTMLDivElement>(null);
 
   const newChatMessage = api.chat.newChatMessage.useMutation({
