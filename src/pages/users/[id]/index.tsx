@@ -8,22 +8,16 @@ import React, { useState } from "react";
 import { Button } from "~/components/Button";
 import { api } from "~/utils/api";
 import { createId } from "@paralleldrive/cuid2";
+import ProductCard from "~/components/ProductCard";
 
 interface UserPageProps {
   userId: string;
 }
 
 const UserPage: NextPage<UserPageProps> = ({ userId }) => {
-  const { data: findChatWithUserData } = api.chat.findChatWithUser.useQuery(
-    {
-      userId,
-    },
-    {
-      onSuccess: (data) => {
-        console.log(data);
-      },
-    }
-  );
+  const { data: findChatWithUserData } = api.chat.findChatWithUser.useQuery({
+    userId,
+  });
   const newChatThreadId = createId();
   const [newChatIsLoading, setNewChatIsLoading] = useState(false);
 
@@ -31,7 +25,9 @@ const UserPage: NextPage<UserPageProps> = ({ userId }) => {
   const { data: user, isLoading } = api.users.getUserById.useQuery({ userId });
 
   const { data: userProducts, isLoading: isGetUserProductsLoading } =
-    api.products.getUserProducts.useQuery();
+    api.products.getUserProducts.useQuery({
+      ownerId: userId,
+    });
 
   const router = useRouter();
   const newChatThread = api.chat.newChatThread.useMutation({
@@ -123,8 +119,16 @@ const UserPage: NextPage<UserPageProps> = ({ userId }) => {
         <div id="user-products">
           <p className="text-xl font-semibold">Products</p>
 
-          <div className="grid grid-flow-row gap-y-4 md:grid-cols-2 md:gap-y-0">
-            <p>No Products</p>
+          <div className="mt-6 grid grid-flow-row gap-y-4 md:grid-cols-3 md:gap-y-0">
+            {userProducts?.length === 0 && <p>No products</p>}
+
+            {userProducts?.map((product) => (
+              <ProductCard
+                product={product}
+                key={product.id}
+                className="md:col-span-1"
+              />
+            ))}
           </div>
         </div>
       </div>
