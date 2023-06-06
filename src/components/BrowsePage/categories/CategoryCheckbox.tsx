@@ -18,7 +18,7 @@ const CategoryCheckbox: React.FC<CategoryCheckboxProps> = ({
   };
 
   return (
-    <div className="">
+    <div className="flex flex-row gap-x-1.5">
       <input
         type="checkbox"
         id={category}

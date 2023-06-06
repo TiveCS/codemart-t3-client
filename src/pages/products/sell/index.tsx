@@ -72,7 +72,14 @@ const SellPage: NextPage = () => {
     setValue: setCategory,
   } = useInput("", {
     isRequired: false,
-    validate: (value) => validateText(value),
+    validate: (value) => {
+      if (value.length === 0 || value.trim() === "") {
+        setCategory("");
+        return true;
+      }
+
+      return validateText(value);
+    },
   });
   const [categories, setCategories] = useState<string[]>([]);
   const {
