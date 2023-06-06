@@ -17,6 +17,7 @@ interface FormCategoryInputProps {
   onChangeHandler: (e: ChangeEvent<HTMLInputElement>) => void;
   onAddHandler: (state: SetStateAction<string[]>) => void;
   onDeleteHandler: (state: SetStateAction<string[]>) => void;
+  onKeyUpHandler: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   required?: boolean;
   items?: string[];
   setCategory: (state: SetStateAction<string>) => void;
@@ -36,6 +37,7 @@ const FormCategoryInput: React.FC<FormCategoryInputProps> = ({
   setCategory,
   onDeleteHandler,
   onAddHandler,
+  onKeyUpHandler,
 }) => {
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     event.preventDefault();
@@ -68,6 +70,7 @@ const FormCategoryInput: React.FC<FormCategoryInputProps> = ({
         onChange={handleChange}
         value={value}
         required={required}
+        onKeyUp={onKeyUpHandler}
       />
 
       {value && value.length > 0 && (

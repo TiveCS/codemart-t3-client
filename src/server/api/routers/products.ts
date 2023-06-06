@@ -309,4 +309,30 @@ export const productsRouter = createTRPCRouter({
 
       return { products, nextCursor };
     }),
+
+  getLatestCategories: publicProcedure.query(async ({ ctx }) => {
+    const { prisma } = ctx;
+    const take = 20;
+
+    const productCategories: {
+      categories: string[];
+    }[] = await prisma.product.findMany({
+      take,
+      orderBy: {
+        updated_at: "desc",
+      },
+      select: {
+        categories: true,
+      },
+    });
+
+    const categoriesSet = productCategories.reduce((set, product) => {
+      product.categories.forEach((category) => {
+        set.add(category);
+      });
+      return set;
+    }, new Set<string>());
+
+    return Array.from(categoriesSet);
+  }),
 });

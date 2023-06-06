@@ -5,12 +5,16 @@ import ProductList from "~/components/BrowsePage/ProductList";
 import SearchBar from "~/components/BrowsePage/SearchBar";
 import CategoryCheckbox from "~/components/BrowsePage/categories/CategoryCheckbox";
 import useInput from "~/hooks/useInput";
+import { api } from "~/utils/api";
 
 const ProductBrowse: NextPage = () => {
   const { value: search, onValueChangeHandler: onSearchChange } = useInput<
     string | undefined
   >(undefined);
   const [categories, setCategories] = useState<string[]>([]);
+
+  const { data: availableCategories, isLoading: isCategoryLoading } =
+    api.products.getLatestCategories.useQuery();
 
   return (
     <>
@@ -19,15 +23,17 @@ const ProductBrowse: NextPage = () => {
       </Head>
       <div className="grid grid-flow-col gap-x-4 lg:grid-cols-12">
         <div className="hidden h-screen bg-white px-6 py-8 shadow lg:col-span-3 lg:block">
-          <div>
-            <h6 className="font-medium">Framework</h6>
-            <CategoryCheckbox category="Spring" setCategories={setCategories} />
-            <CategoryCheckbox
-              category="Laravel"
-              setCategories={setCategories}
-            />
-            <CategoryCheckbox category="React" setCategories={setCategories} />
-            <CategoryCheckbox category="Echo" setCategories={setCategories} />
+          <div className="flex flex-col gap-y-2">
+            <h6 className="font-medium">Categories</h6>
+            {isCategoryLoading && <p>Loading...</p>}
+
+            {availableCategories?.map((category) => (
+              <CategoryCheckbox
+                key={category}
+                category={category}
+                setCategories={setCategories}
+              />
+            ))}
           </div>
         </div>
         <div className="lg:col-span-9">

@@ -1,8 +1,8 @@
 import Image from "next/image";
+import Link from "next/link";
+import NoImageCover from "public/assets/img/no-image.jpg";
 import { type ProductBrowseData } from "~/types";
 import { Button } from "../Button";
-import NoImageCover from "public/assets/img/no-image.jpg";
-import Link from "next/link";
 import CategoryItem from "../Forms/CategoryItem";
 
 interface ProductCardProps {
@@ -29,7 +29,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     <div
       key={product.id}
       id={product.id}
-      className={`${className}  min-w-2xs rounded-md bg-white shadow mobile-lg:min-w-xs`}
+      className={`${className}  min-w-2xs max-w-xs rounded-md bg-white shadow mobile-lg:min-w-xs`}
     >
       <div className="relative h-56 w-full">
         <Image
@@ -45,7 +45,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <div className="px-4 py-4">
         <div className="mb-8">
           <Link href={"/products/[id]"} as={`/products/${product.id}`}>
-            <h6 className="text-lg font-medium text-codemart-600">
+            <h6 className="whitespace-normal text-lg font-medium text-codemart-600">
               {product.title}
             </h6>
           </Link>
@@ -55,14 +55,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
             as={`/users/${product.owner.id}`}
             className="group"
           >
-            <p className="text-sm font-medium text-gray-900 group-hover:text-codemart-500">
+            <p className="overflow-hidden truncate text-sm font-medium text-gray-900 group-hover:text-codemart-500">
               {product.owner.name}
             </p>
           </Link>
 
-          <p className="text-sm text-gray-600">{product.description}</p>
+          <p className="overflow-hidden truncate whitespace-pre break-words text-sm text-gray-600">
+            {product.description}
+          </p>
 
-          <div className="mt-2 flex flex-row gap-x-1.5">
+          <div className="mt-2 flex flex-row flex-wrap gap-x-1.5 gap-y-1.5">
             {product.categories.map((category) => (
               <CategoryItem text={category} key={category} style="outlined" />
             ))}
