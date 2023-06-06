@@ -335,4 +335,17 @@ export const productsRouter = createTRPCRouter({
 
     return Array.from(categoriesSet);
   }),
+
+  getUserProducts: protectedProcedure.query(async ({ ctx }) => {
+    const { prisma, session } = ctx;
+
+    return await prisma.product.findMany({
+      where: {
+        ownerId: session.user.id,
+      },
+      orderBy: {
+        updated_at: "desc",
+      },
+    });
+  }),
 });

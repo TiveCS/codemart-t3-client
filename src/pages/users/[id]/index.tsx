@@ -14,14 +14,25 @@ interface UserPageProps {
 }
 
 const UserPage: NextPage<UserPageProps> = ({ userId }) => {
-  const { data: findChatWithUserData } = api.chat.findChatWithUser.useQuery({
-    userId,
-  });
+  const { data: findChatWithUserData } = api.chat.findChatWithUser.useQuery(
+    {
+      userId,
+    },
+    {
+      onSuccess: (data) => {
+        console.log(data);
+      },
+    }
+  );
   const newChatThreadId = createId();
   const [newChatIsLoading, setNewChatIsLoading] = useState(false);
 
   const { data: session } = useSession();
   const { data: user, isLoading } = api.users.getUserById.useQuery({ userId });
+
+  const { data: userProducts, isLoading: isGetUserProductsLoading } =
+    api.products.getUserProducts.useQuery();
+
   const router = useRouter();
   const newChatThread = api.chat.newChatThread.useMutation({
     onSuccess: () => {
@@ -36,7 +47,7 @@ const UserPage: NextPage<UserPageProps> = ({ userId }) => {
     },
   });
 
-  if (isLoading) {
+  if (isLoading || isGetUserProductsLoading) {
     return <p>Loading...</p>;
   }
 
@@ -67,7 +78,7 @@ const UserPage: NextPage<UserPageProps> = ({ userId }) => {
         <title>{user.name} | CodeMart</title>
       </Head>
 
-      <div className="mx-auto flex flex-col gap-y-8 bg-white px-8 py-8 shadow md:max-w-6xl">
+      <div className="mx-auto flex min-h-md flex-col gap-y-8 bg-white px-8 py-8 shadow md:max-w-6xl">
         <div
           id="user-profile"
           className="grid grid-flow-row items-center gap-y-4 md:grid-cols-12 md:gap-y-0"
