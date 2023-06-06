@@ -39,30 +39,58 @@ const ProductEditPage: NextPage<ProductEditPageProps> = ({ id }) => {
     }
   );
 
-  const [title, onTitleChangeHandler, setTitle] = useInput("");
-  const [description, onDescriptionChangeHandler, setDescription] =
-    useInput("");
-  const [price, onPriceChangeHandler, setPrice] = useInput(0);
-  const [body, onBodyChangeHandler, setBody] = useInput("");
+  const {
+    value: title,
+    onValueChangeHandler: onTitleChangeHandler,
+    setValue: setTitle,
+    isValid: isTitleValid,
+  } = useInput<string>("", {
+    isRequired: true,
+  });
+  const {
+    value: description,
+    onValueChangeHandler: onDescriptionChangeHandler,
+    setValue: setDescription,
+    isValid: isDescriptionValid,
+  } = useInput<string>("", {
+    isRequired: true,
+  });
+  const {
+    value: price,
+    onValueChangeHandler: onPriceChangeHandler,
+    setValue: setPrice,
+  } = useInput(0);
+  const {
+    value: body,
+    onValueChangeHandler: onBodyChangeHandler,
+    setValue: setBody,
+  } = useInput<string>("");
 
-  const [category, onCategoryChangeHandler, setCategory] = useInput("");
+  const {
+    value: category,
+    onValueChangeHandler: onCategoryChangeHandler,
+    setValue: setCategory,
+  } = useInput<string>("");
   const [categories, setCategories] = useState<string[]>([]);
-  const [demoUrl, onDemoUrlChangeHandler, setDemoUrl, isDemoUrlValid] =
-    useInput("", {
-      isRequired: false,
-      validate: (value) => {
-        if (value.trim() === "") {
-          return true;
-        }
+  const {
+    value: demoUrl,
+    onValueChangeHandler: onDemoUrlChangeHandler,
+    setValue: setDemoUrl,
+    isValid: isDemoUrlValid,
+  } = useInput<string>("", {
+    isRequired: false,
+    validate: (value) => {
+      try {
+        new URL(value);
+        return true;
+      } catch {
+        if (value.length === 0) return true;
 
-        try {
-          new URL(value);
-          return true;
-        } catch {
-          return false;
-        }
-      },
-    });
+        setDemoUrl("");
+        return true;
+      }
+    },
+  });
 
   const [isPublishing, setIsPublishing] = useState(false);
 
@@ -101,8 +129,26 @@ const ProductEditPage: NextPage<ProductEditPageProps> = ({ id }) => {
   }
 
   const isValidInput = () => {
+    const isValidTitle = isTitleValid && title.length > 0;
+    const isValidDescription = isDescriptionValid && description.length > 0;
     const isValidPrice = price !== undefined && price >= 0;
     const isValidCategories = categories.length > 0;
+
+    if (!isValidTitle) {
+      addToast({
+        message: "Please enter a valid title.",
+        variant: "danger",
+      });
+      return false;
+    }
+
+    if (!isValidDescription) {
+      addToast({
+        message: "Please enter a valid description.",
+        variant: "danger",
+      });
+      return false;
+    }
 
     if (!isValidPrice) {
       addToast({

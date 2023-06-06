@@ -20,7 +20,11 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({
     productId,
   });
 
-  const [feedback, onFeedbackChangeHandler, setFeedback] = useInput("");
+  const {
+    value: feedback,
+    onValueChangeHandler: onFeedbackChangeHandler,
+    setValue: setFeedback,
+  } = useInput("");
   const [isRecomended, setIsRecomended] = useState(true);
   const [loading, setLoading] = useState(false);
 

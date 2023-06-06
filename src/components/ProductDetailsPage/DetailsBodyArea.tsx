@@ -7,6 +7,8 @@ import { Button } from "../Button";
 import FeedbackCard from "../FeedbackCard";
 import FeedbackForm from "../FeedbackForm";
 import DetailsBodyButtonSelector from "./DetailsBodyButtonSelector";
+import useToastsStore from "~/zustand/toastsStore";
+import { useRouter } from "next/router";
 
 interface DetailsBodyAreaProps {
   productId: string;
@@ -31,12 +33,41 @@ const DetailsBodyArea: React.FC<DetailsBodyAreaProps> = ({
   const { data: session } = useSession();
   const isAuthed = !!session?.user;
   const isOwner = ownerId === session?.user.id;
+  const { addToast } = useToastsStore();
+  const router = useRouter();
 
   const [section, setSection] = useState<SectionAreas>("description");
   const [feedbackPage, setFeedbackPage] = useState(0);
 
   const getFeedbacks = api.feedbacks.getFeedbacks.useInfiniteQuery({
     productId,
+  });
+
+  const [isDeleting, setIsDeleting] = useState(false);
+  const deleteProduct = api.products.deleteProduct.useMutation({
+    onSuccess: () => {
+      addToast({
+        message: "Product deleted successfully",
+        variant: "success",
+      });
+      setIsDeleting(false);
+
+      void router.push("/products");
+    },
+    onError: () => {
+      addToast({
+        message: "Product is failed to delete",
+        variant: "danger",
+      });
+      setIsDeleting(false);
+    },
+    onMutate: () => {
+      addToast({
+        message: "Deleting product...",
+        variant: "normal",
+      });
+      setIsDeleting(true);
+    },
   });
 
   const { data, isLoading: isFeedbackLoading } = getFeedbacks;
@@ -46,6 +77,10 @@ const DetailsBodyArea: React.FC<DetailsBodyAreaProps> = ({
 
   const showMoreFeedbacks = () => {
     setFeedbackPage(feedbackPage + 1);
+  };
+
+  const handleDeleteProduct = () => {
+    void deleteProduct.mutateAsync({ productId });
   };
 
   return (
@@ -120,17 +155,15 @@ const DetailsBodyArea: React.FC<DetailsBodyAreaProps> = ({
           <Link href={`/products/[id]/edit`} as={`/products/${productId}/edit`}>
             <Button style="outline">Edit Details</Button>
           </Link>
-          <Link
-            href={"/products/[id]/delete"}
-            as={`/products/${productId}/delete`}
+
+          <Button
+            className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+            style="outline"
+            onClick={handleDeleteProduct}
+            isLoading={isDeleting}
           >
-            <Button
-              className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
-              style="outline"
-            >
-              Delete Product
-            </Button>
-          </Link>
+            Delete Product
+          </Button>
         </div>
       )}
 
