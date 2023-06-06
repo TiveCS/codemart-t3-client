@@ -14,14 +14,24 @@ const ChatThreadPage: NextPage<ChatThreadPageProps> = ({ threadId }) => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const { socket } = useSocket();
-  const chatThread = api.chat.getChatThread.useQuery({ threadId });
   const messagesContainer = useRef<HTMLDivElement>(null);
+  const chatThread = api.chat.getChatThread.useQuery(
+    { threadId },
+    {
+      keepPreviousData: true,
+      refetchOnReconnect: true,
+      refetchInterval: 3000,
+      structuralSharing: true,
+    }
+  );
 
   const newChatMessage = api.chat.newChatMessage.useMutation({
     onSuccess: async (data) => {
       if (data) {
         socket?.emit("createdMessage", data);
-        await chatThread.refetch({});
+        await chatThread.refetch({
+          cancelRefetch: chatThread.fetchStatus === "fetching",
+        });
       }
     },
   });
@@ -31,12 +41,34 @@ const ChatThreadPage: NextPage<ChatThreadPageProps> = ({ threadId }) => {
       await fetch("/api/socket");
 
       socket?.on("newIncomingMessage", async () => {
-        await chatThread.refetch({});
+        console.log("newIncomingMessage");
+
+        await chatThread.refetch({
+          cancelRefetch: chatThread.fetchStatus === "fetching",
+        });
       });
     };
 
     void socketInitializer();
   }, [chatThread, socket]);
+
+  useEffect(() => {
+    const scrollToBottom = () => {
+      messagesContainer.current?.scrollTo({
+        top: messagesContainer.current.scrollHeight,
+        behavior: "smooth",
+      });
+    };
+
+    // scroll to bottom after 2 second
+    const timeout = setTimeout(() => {
+      scrollToBottom();
+    }, 1000);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, []);
 
   if (chatThread.isLoading || status === "loading") {
     return <p>Loading...</p>;

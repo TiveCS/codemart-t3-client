@@ -335,4 +335,40 @@ export const productsRouter = createTRPCRouter({
 
     return Array.from(categoriesSet);
   }),
+
+  getUserProducts: publicProcedure
+    .input(
+      z.object({
+        ownerId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }): Promise<ProductBrowseData[]> => {
+      const { prisma } = ctx;
+      const { ownerId } = input;
+
+      const products: ProductBrowseData[] = await prisma.product.findMany({
+        where: {
+          ownerId,
+        },
+        orderBy: {
+          updated_at: "desc",
+        },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          categories: true,
+          price: true,
+          cover_url: true,
+          owner: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      });
+
+      return products;
+    }),
 });

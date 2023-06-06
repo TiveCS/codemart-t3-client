@@ -8,6 +8,7 @@ import React, { useState } from "react";
 import { Button } from "~/components/Button";
 import { api } from "~/utils/api";
 import { createId } from "@paralleldrive/cuid2";
+import ProductCard from "~/components/ProductCard";
 
 interface UserPageProps {
   userId: string;
@@ -22,6 +23,12 @@ const UserPage: NextPage<UserPageProps> = ({ userId }) => {
 
   const { data: session } = useSession();
   const { data: user, isLoading } = api.users.getUserById.useQuery({ userId });
+
+  const { data: userProducts, isLoading: isGetUserProductsLoading } =
+    api.products.getUserProducts.useQuery({
+      ownerId: userId,
+    });
+
   const router = useRouter();
   const newChatThread = api.chat.newChatThread.useMutation({
     onSuccess: () => {
@@ -36,7 +43,7 @@ const UserPage: NextPage<UserPageProps> = ({ userId }) => {
     },
   });
 
-  if (isLoading) {
+  if (isLoading || isGetUserProductsLoading) {
     return <p>Loading...</p>;
   }
 
@@ -67,7 +74,7 @@ const UserPage: NextPage<UserPageProps> = ({ userId }) => {
         <title>{user.name} | CodeMart</title>
       </Head>
 
-      <div className="mx-auto flex flex-col gap-y-8 bg-white px-8 py-8 shadow md:max-w-6xl">
+      <div className="mx-auto flex min-h-md flex-col gap-y-8 bg-white px-8 py-8 shadow md:max-w-6xl">
         <div
           id="user-profile"
           className="grid grid-flow-row items-center gap-y-4 md:grid-cols-12 md:gap-y-0"
@@ -112,8 +119,16 @@ const UserPage: NextPage<UserPageProps> = ({ userId }) => {
         <div id="user-products">
           <p className="text-xl font-semibold">Products</p>
 
-          <div className="grid grid-flow-row gap-y-4 md:grid-cols-2 md:gap-y-0">
-            <p>No Products</p>
+          <div className="mt-6 grid grid-flow-row gap-y-4 md:grid-cols-3 md:gap-y-0">
+            {userProducts?.length === 0 && <p>No products</p>}
+
+            {userProducts?.map((product) => (
+              <ProductCard
+                product={product}
+                key={product.id}
+                className="md:col-span-1"
+              />
+            ))}
           </div>
         </div>
       </div>

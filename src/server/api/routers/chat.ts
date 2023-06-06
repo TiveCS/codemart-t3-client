@@ -106,7 +106,11 @@ export const chatRouter = createTRPCRouter({
           audienceList: {
             some: {
               id: userId,
-              AND: {
+            },
+          },
+          AND: {
+            audienceList: {
+              some: {
                 id: session.user.id,
               },
             },

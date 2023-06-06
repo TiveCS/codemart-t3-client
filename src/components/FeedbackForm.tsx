@@ -47,6 +47,7 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({
         variant: "success",
       });
       await getFeedbacks.refetch();
+      await userFeedback.refetch();
       setLoading(false);
     },
     onError: () => {
@@ -85,6 +86,8 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({
     const hasFeedback = userFeedback.data?.content;
 
     if (!hasFeedback) {
+      console.log("send feedback");
+
       sendFeedback.mutate({
         productId,
         content: feedback,

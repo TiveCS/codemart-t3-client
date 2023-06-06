@@ -77,7 +77,7 @@ export const purchasesRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const { orderId, transactionStatus } = input;
+      const { orderId } = input;
       const { midtrans, prisma } = ctx;
 
       const transactionStatusResponse: ITransactionStatus | ITransactionFail =

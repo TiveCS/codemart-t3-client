@@ -1,8 +1,7 @@
-import { GetServerSideProps, type NextPage } from "next";
+import { type GetServerSideProps, type NextPage } from "next";
 import { getServerSession } from "next-auth";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
 import { authOptions } from "~/server/auth";
 import { api } from "~/utils/api";
 
@@ -36,7 +35,6 @@ interface PurchasesCallbackPageProps {
 
 const PurchasesCallbackPage: NextPage<PurchasesCallbackPageProps> = ({
   orderId,
-  statusCode,
   transactionStatus,
 }) => {
   const router = useRouter();
