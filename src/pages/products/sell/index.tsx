@@ -184,17 +184,6 @@ const SellPage: NextPage = () => {
     return true;
   };
 
-  const handleKeyUpCategory = (
-    event: React.KeyboardEvent<HTMLInputElement>
-  ) => {
-    event.preventDefault();
-
-    if (event.key === "Enter") {
-      setCategories((prev) => [...prev, category.trim()]);
-      setCategory("");
-    }
-  };
-
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -297,7 +286,6 @@ const SellPage: NextPage = () => {
               onChangeHandler={onCategoryChangeHandler}
               onAddHandler={setCategories}
               onDeleteHandler={setCategories}
-              onKeyUpHandler={handleKeyUpCategory}
               setCategory={setCategory}
               value={category}
               className="max-w-2xs"
