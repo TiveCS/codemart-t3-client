@@ -24,7 +24,7 @@ const FeaturesPoint: React.FC<FeaturesPointProps> = ({
         {icon === "Src" && <SrcIcon />}
         {icon === "Search" && <SearchIcon />}
 
-        <h4 className="text-2xl font-medium">{title}</h4>
+        <h4 className="text-xl font-medium lg:text-2xl">{title}</h4>
       </div>
 
       <p className="leading-relaxed">{description}</p>
