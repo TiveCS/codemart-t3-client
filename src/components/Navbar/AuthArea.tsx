@@ -6,11 +6,13 @@ import { Bars3Icon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import AvatarDropdown from "./AvatarDropdown";
 import { EnvelopeIcon } from "@heroicons/react/24/outline";
+import SideNavbar from "../SideNavbar";
 
 const AuthArea: React.FC = () => {
   const { data: session, status } = useSession();
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
     <div className="flex flex-row items-center justify-end">
@@ -70,8 +72,13 @@ const AuthArea: React.FC = () => {
       </div>
 
       {status === "authenticated" && (
-        <Bars3Icon className="h-6 w-6 text-gray-500 lg:hidden" />
+        <Bars3Icon
+          className="h-6 w-6 cursor-pointer text-gray-500 lg:hidden"
+          onClick={() => setIsSidebarOpen(true)}
+        />
       )}
+
+      <SideNavbar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
     </div>
   );
 };
