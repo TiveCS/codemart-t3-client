@@ -29,7 +29,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     <div
       key={product.id}
       id={product.id}
-      className={`${className}  min-w-2xs max-w-xs rounded-md bg-white shadow mobile-lg:min-w-xs`}
+      className={`${className} mx-auto min-w-2xs max-w-2xs rounded-md bg-white shadow mobile-md:min-w-xs mobile-md:max-w-xs md:mx-0`}
     >
       <div className="relative h-56 w-full">
         <Image
