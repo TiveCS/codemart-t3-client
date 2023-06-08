@@ -21,17 +21,20 @@ const Home: NextPage = () => {
       <>
         <section
           id="hero"
-          className="my-32 flex flex-row items-center justify-between px-32"
+          className="my-16 flex flex-row items-center justify-center px-4 md:my-32 lg:justify-between lg:px-16"
         >
-          <div id="hero-tagline" className="flex max-w-xl flex-col gap-y-12">
+          <div
+            id="hero-tagline"
+            className="flex max-w-xl flex-col gap-y-6 md:gap-y-12"
+          >
             <div id="hero-text">
-              <h1 className="text-5xl font-bold !leading-snug">
+              <h1 className="text-3xl font-bold !leading-snug md:text-4xl lg:text-5xl">
                 Explore <span className="text-codemart-600">Source Code</span>{" "}
                 for your Business{" "}
                 <span className="text-codemart-600">Needs</span>
               </h1>
 
-              <p className="max-w-lg text-gray-900">
+              <p className="mt-4 max-w-lg text-gray-900">
                 CodeMart is Source Code marketplace that allow Developer post
                 their works and Customer to buy Developer code based on their
                 needs and requirements.
@@ -39,7 +42,7 @@ const Home: NextPage = () => {
             </div>
             <div
               id="hero-cta"
-              className="col-span-2 grid w-full grid-flow-col gap-x-12"
+              className="col-span-2 grid w-full grid-flow-row gap-y-6 md:grid-flow-col md:gap-x-12"
             >
               <Link href="/products">
                 <Button>Buy a Source Code</Button>
@@ -49,19 +52,19 @@ const Home: NextPage = () => {
               </Link>
             </div>
           </div>
-          <div id="hero-image">
+          <div id="hero-image" className="hidden lg:block">
             <ExploreImage />
           </div>
         </section>
 
         <section
           id="features"
-          className="flex flex-col items-center justify-center space-y-16 pl-32 pr-16 pt-16 pb-24"
+          className="mx-auto flex flex-col gap-y-12 px-2 lg:px-16"
         >
-          <h2 className="text-center text-4xl font-semibold">
+          <h2 className="text-center text-3xl font-semibold md:text-4xl">
             We&apos;re here to Help
           </h2>
-          <div className="flex flex-row space-x-8">
+          <div className="grid grid-flow-row gap-y-6 md:grid-flow-col md:gap-y-0 md:gap-x-8">
             <FeaturesPoint
               title="Explore Source Code"
               description="Explore Source Code from our marketplace and find the best one for your business needs."
@@ -90,20 +93,19 @@ const Home: NextPage = () => {
 
         <section
           id="contact-us"
-          className="flex flex-row items-center justify-between py-32 pl-32 pr-48"
+          className="mx-auto my-32 flex max-w-6xl flex-col items-center justify-between gap-y-6 text-center lg:flex-row lg:px-16 lg:text-left"
         >
           <div>
-            <h3 className="text-4xl font-semibold">Stay in Touch with Us</h3>
+            <h3 className="text-2xl font-semibold md:text-4xl">
+              Stay in Touch with Us
+            </h3>
             <br />
             <p className="text-recandy-gray-900">
               Ask us question so we can help you
             </p>
           </div>
 
-          <form
-            action=""
-            className="flex w-1/3 flex-col space-y-4 rounded-md bg-white px-8 py-12 drop-shadow-xl"
-          >
+          <form className="flex w-full max-w-sm flex-col space-y-4 rounded-md bg-white px-8 py-12 drop-shadow-xl">
             <FormInput placeholder={"Full Name"} />
             <FormInput placeholder={"Email"} />
             <FormInput placeholder={"Phone Number"} />

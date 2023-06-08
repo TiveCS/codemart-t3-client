@@ -21,6 +21,7 @@ const Navbar: React.FC = () => {
           </Link>
         </div>
       </div>
+
       <AuthArea />
     </nav>
   );
