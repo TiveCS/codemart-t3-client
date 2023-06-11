@@ -306,12 +306,14 @@ const SellPage: NextPage = () => {
               label="Cover Image"
               onChangeHandler={onCoverImgFileChangeHandler}
               accept={"image/png,image/jpeg"}
+              acceptType="image"
               required
             />
             <FileInput
               name="code_file"
               label="Source File"
               accept=".zip"
+              acceptType="zip"
               onChangeHandler={onCodeFileChangeHandler}
               required
             />

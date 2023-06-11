@@ -9,11 +9,13 @@ import { type FeedbacksDataType } from "~/types/FeedbacksData";
 interface FeedbackFormProps {
   productId: string;
   getFeedbacks: UseInfiniteQueryResult<FeedbacksDataType[], unknown>;
+  hasPurchased: boolean;
 }
 
 const FeedbackForm: React.FC<FeedbackFormProps> = ({
   productId,
   getFeedbacks,
+  hasPurchased,
 }) => {
   const { addToast } = useToastsStore();
   const userFeedback = api.feedbacks.getFeedbackForUser.useQuery({
@@ -86,8 +88,6 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({
     const hasFeedback = userFeedback.data?.content;
 
     if (!hasFeedback) {
-      console.log("send feedback");
-
       sendFeedback.mutate({
         productId,
         content: feedback,
@@ -111,6 +111,7 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({
         isLoading={loading}
         isRecommended={isRecomended}
         setIsRecomended={setIsRecomended}
+        hasPurchased={hasPurchased}
       />
     </form>
   );

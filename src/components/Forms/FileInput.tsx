@@ -1,4 +1,7 @@
 import { type FormEvent, type InputHTMLAttributes } from "react";
+import useToastsStore from "~/zustand/toastsStore";
+
+type FileAcceptType = "zip" | "image";
 
 interface FileInputProps {
   className?: string;
@@ -7,6 +10,7 @@ interface FileInputProps {
   placeholder?: string;
   label?: string;
   onChangeHandler: (event: FormEvent<HTMLInputElement>) => void | Promise<void>;
+  acceptType?: FileAcceptType;
   accept?: InputHTMLAttributes<HTMLInputElement>["accept"];
   required?: boolean;
   multiple?: boolean;
@@ -19,13 +23,72 @@ const FileInput: React.FC<FileInputProps> = ({
   placeholder,
   label,
   onChangeHandler,
+  acceptType,
   accept,
   required = false,
   multiple = false,
 }) => {
+  const { addToast } = useToastsStore();
+
+  function validateImage(event: FormEvent<HTMLInputElement>): boolean {
+    const files = event.currentTarget.files;
+
+    if (!files) return false;
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files.item(i);
+      if (!file) return false;
+
+      const isImage = file.type === "image/jpeg" || file.type === "image/png";
+
+      if (!isImage) return false;
+    }
+
+    return true;
+  }
+
+  function validateZip(event: FormEvent<HTMLInputElement>): boolean {
+    const files = event.currentTarget.files;
+
+    if (!files) return false;
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files.item(i);
+      if (!file) return false;
+
+      const type = file.type;
+      const isZip =
+        type === "application/zip" ||
+        type === "application/x-zip-compressed" ||
+        type === "application/x-zip" ||
+        type === "application/x-compress" ||
+        type === "application/x-compressed" ||
+        type === "multipart/x-zip";
+      if (!isZip) return false;
+    }
+
+    return true;
+  }
+
   function handleChange(event: FormEvent<HTMLInputElement>) {
-    void onChangeHandler(event);
     event.preventDefault();
+
+    const isValid =
+      (acceptType === "image" && validateImage(event)) ||
+      (acceptType === "zip" && validateZip(event));
+
+    if (!isValid) {
+      addToast({
+        message: `Tipe file bukan ${
+          acceptType ? acceptType : "yang diijinkan"
+        }`,
+        variant: "danger",
+      });
+      event.currentTarget.value = "";
+      return;
+    }
+
+    void onChangeHandler(event);
   }
 
   return (
@@ -42,9 +105,9 @@ const FileInput: React.FC<FileInputProps> = ({
           id={id}
           name={name}
           type={"file"}
+          accept={accept}
           placeholder={placeholder}
           onChange={handleChange}
-          accept={accept}
           required={required}
           multiple={multiple}
         />

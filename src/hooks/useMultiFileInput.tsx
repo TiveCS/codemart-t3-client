@@ -70,9 +70,58 @@ const useMultiFileInput = ({
       });
   };
 
+  const validateFilesCount = (newFiles: FileList) => {
+    if (maxFiles == 0) return true;
+
+    const currentFilesCount = files.length;
+    const newFilesCount = newFiles.length;
+
+    return currentFilesCount + newFilesCount <= maxFiles;
+  };
+
+  const validateFilesSize = (
+    newFiles: FileList
+  ): { fileName: string; status: boolean } => {
+    for (let i = 0; i < newFiles.length; i++) {
+      const file = newFiles[i];
+      if (!file) continue;
+      if (file.size > maxFileSize) {
+        return {
+          fileName: file.name,
+          status: false,
+        };
+      }
+    }
+
+    return {
+      fileName: "",
+      status: true,
+    };
+  };
+
   const onFileChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newFiles = event.target.files;
     if (!newFiles) return;
+
+    if (!validateFilesCount(newFiles)) {
+      addToast({
+        message: `You can only upload ${maxFiles} files.`,
+        variant: "danger",
+      });
+      event.currentTarget.value = "";
+      return;
+    }
+
+    const filesSizeValidity = validateFilesSize(newFiles);
+
+    if (!filesSizeValidity.status) {
+      addToast({
+        message: `File ${filesSizeValidity.fileName} is too large.`,
+        variant: "danger",
+      });
+      event.currentTarget.value = "";
+      return;
+    }
 
     if (newFiles.length > 1) {
       encodeFiles(newFiles);
@@ -88,18 +137,24 @@ const useMultiFileInput = ({
 
     if (!newFiles) return;
 
-    if (maxFiles > 0 && newFiles.length > maxFiles) return;
+    if (!validateFilesCount(newFiles)) {
+      addToast({
+        message: `You can only upload ${maxFiles} files.`,
+        variant: "danger",
+      });
+      event.dataTransfer.clearData();
+      return;
+    }
 
-    for (let i = 0; i < newFiles.length; i++) {
-      const file = newFiles[i];
-      if (!file) continue;
-      if (file.size > maxFileSize) {
-        addToast({
-          message: `File ${file.name} is too large.`,
-          variant: "danger",
-        });
-        return;
-      }
+    const filesSizeValidity = validateFilesSize(newFiles);
+
+    if (!filesSizeValidity.status) {
+      addToast({
+        message: `File ${filesSizeValidity.fileName} is too large.`,
+        variant: "danger",
+      });
+      event.dataTransfer.clearData();
+      return;
     }
 
     if (newFiles.length > 1) {

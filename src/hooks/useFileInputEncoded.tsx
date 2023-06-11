@@ -25,10 +25,13 @@ function useFileInputEncoded(
   async function onFileChangeHandler(event: FormEvent<HTMLInputElement>) {
     event.preventDefault();
 
+    if (!event.currentTarget.files) return;
+
     const file = event.currentTarget.files?.item(0);
     if (!file) return;
 
     if (maxSizeInBytes > 0 && file.size > maxSizeInBytes) {
+      event.currentTarget.value = "";
       addToast({
         message: `${event.currentTarget.name} tidak bisa lebih dari ${
           maxSizeInBytes / sizeInKiloBytes
@@ -38,8 +41,6 @@ function useFileInputEncoded(
       return;
     }
 
-    // const encoded = await splitFileToBase64(file, options?.chunkSize);
-    // const encoded = await fileToBase64(file);
     const fileData = await fileToFileData(file);
 
     setFileEncoded(fileData);

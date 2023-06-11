@@ -115,6 +115,7 @@ const ProductUpdatePage: NextPage = () => {
           <FileInput
             name="code_file"
             label="Source Code File"
+            acceptType="zip"
             accept=".zip"
             onChangeHandler={onChangeCodeFile}
             required
