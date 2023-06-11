@@ -1,4 +1,4 @@
-import Head from "next/head";
+import Script from "next/script";
 import Footer from "~/components/Footer";
 import Navbar from "~/components/Navbar";
 import Toast from "~/components/Toast";
@@ -13,33 +13,32 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   return (
     <>
-      <Head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-            (function (m, a, z, e) {
-              var s, t;
+      <Script
+        id="maze-snippet"
+        dangerouslySetInnerHTML={{
+          __html: `
+          (function (m, a, z, e) {
+            var s, t;
+            try {
+              t = m.sessionStorage.getItem('maze-us');
+            } catch (err) {}
+
+            if (!t) {
+              t = new Date().getTime();
               try {
-                t = m.sessionStorage.getItem('maze-us');
+                m.sessionStorage.setItem('maze-us', t);
               } catch (err) {}
+            }
 
-              if (!t) {
-                t = new Date().getTime();
-                try {
-                  m.sessionStorage.setItem('maze-us', t);
-                } catch (err) {}
-              }
-
-              s = a.createElement('script');
-              s.src = z + '?t=' + t + '&apiKey=' + e;
-              s.async = true;
-              a.getElementsByTagName('head')[0].appendChild(s);
-              m.mazeUniversalSnippetApiKey = e;
-            })(window, document, 'https://snippet.maze.co/maze-universal-loader.js', 'de679ef3-2d5d-46e7-939e-1e4928e0a096');
+            s = a.createElement('script');
+            s.src = z + '?t=' + t + '&apiKey=' + e;
+            s.async = true;
+            a.getElementsByTagName('head')[0].appendChild(s);
+            m.mazeUniversalSnippetApiKey = e;
+          })(window, document, 'https://snippet.maze.co/maze-universal-loader.js', 'de679ef3-2d5d-46e7-939e-1e4928e0a096');
           `,
-          }}
-        />
-      </Head>
+        }}
+      ></Script>
       <div className="h-full min-h-screen">
         <Navbar />
 
