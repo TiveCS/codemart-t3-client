@@ -36,7 +36,7 @@ const ProductPurchasePage: NextPage<ProductPurchasePageProps> = ({ id }) => {
     onSuccess: (data) => {
       if (!data) return;
 
-      window.open(data.redirect_url, "_blank");
+      window.open(data.redirect_url, "_self");
     },
     onMutate: () => {
       setIsLoadingPaymentUrl(true);
@@ -93,13 +93,16 @@ const ProductPurchasePage: NextPage<ProductPurchasePageProps> = ({ id }) => {
       <Head>
         <title>{product.title} | Purchase</title>
       </Head>
-      <main>
+      <main className="mx-auto flex max-w-lg flex-col justify-center bg-white py-16 px-8 shadow">
         <p>{product.title}</p>
         <p>Price: {formattedPrice}</p>
+
+        {/* TODO: Tambahin metode pembayaran */}
 
         <Button
           onClick={(e) => handleStartTransaction(e)}
           isLoading={isLoadingPaymentUrl}
+          className="mt-16"
         >
           Confirm Purchase
         </Button>

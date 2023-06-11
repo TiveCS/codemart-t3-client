@@ -35,15 +35,24 @@ export const purchasesRouter = createTRPCRouter({
 
       const orderId = uuid();
 
-      await prisma.purchaseHistory.create({
-        data: {
-          orderId: orderId,
-          price: product.price,
-          userId: session.user.id,
-          status: "pending",
-          productId: product.id,
-        },
-      });
+      await prisma.$transaction([
+        prisma.purchaseHistory.deleteMany({
+          where: {
+            userId: session.user.id,
+            productId: productId,
+            status: "pending",
+          },
+        }),
+        prisma.purchaseHistory.create({
+          data: {
+            orderId: orderId,
+            price: product.price,
+            userId: session.user.id,
+            status: "pending",
+            productId: product.id,
+          },
+        }),
+      ]);
 
       return midtrans.createTransaction({
         transaction_details: {
@@ -73,11 +82,17 @@ export const purchasesRouter = createTRPCRouter({
     .input(
       z.object({
         orderId: z.string(),
-        transactionStatus: z.enum(["capture", "deny", "expire", "pending"]),
+        transactionStatus: z.enum([
+          "capture",
+          "settlement",
+          "deny",
+          "expire",
+          "pending",
+        ]),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { orderId } = input;
+      const { orderId, transactionStatus } = input;
       const { midtrans, prisma } = ctx;
 
       const transactionStatusResponse: ITransactionStatus | ITransactionFail =

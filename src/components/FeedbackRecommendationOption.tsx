@@ -7,11 +7,12 @@ interface FeedbackRecommendationOptionProps {
   isRecommended: boolean;
   setIsRecomended: React.Dispatch<React.SetStateAction<boolean>>;
   option: "recommended" | "not-recommended";
+  hasPurchased: boolean;
 }
 
 const FeedbackRecommendationOption: React.FC<
   FeedbackRecommendationOptionProps
-> = ({ isRecommended, setIsRecomended, option }) => {
+> = ({ isRecommended, setIsRecomended, option, hasPurchased }) => {
   const optionEqualsRecommended = option === "recommended";
   const isCorrectOption = isRecommended === optionEqualsRecommended;
 
@@ -19,16 +20,15 @@ const FeedbackRecommendationOption: React.FC<
     setIsRecomended(optionEqualsRecommended);
   };
 
-  // TODO: Color is still not follow the isRecommended state
+  const textColor = optionEqualsRecommended
+    ? "text-codemart-700"
+    : "text-red-600";
+
   return (
     <button
       className={`inline-flex flex-col flex-wrap gap-x-2 md:flex-row ${
-        isCorrectOption
-          ? optionEqualsRecommended
-            ? "text-codemart-700"
-            : "text-red-600"
-          : "text-gray-500"
-      }`}
+        !hasPurchased ? "cursor-not-allowed" : ""
+      } ${isCorrectOption && hasPurchased ? textColor : "text-gray-500"}`}
       onClick={handleSetRecommended}
       type="button"
     >

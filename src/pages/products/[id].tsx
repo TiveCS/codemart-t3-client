@@ -48,7 +48,10 @@ const ProductDetails: NextPage<ProductDetailsProps> = ({ id }) => {
 
   const imagesLength = images?.images_url?.length ?? 0;
   const hasDownloadAccess =
-    product?.price === 0 || purchase?.status === "capture" || isOwner;
+    product?.price === 0 ||
+    purchase?.status === "capture" ||
+    purchase?.status === "settlement" ||
+    isOwner;
 
   const demoUrl = product.demo_url;
   const hasDemoUrl = demoUrl !== null;

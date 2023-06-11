@@ -7,6 +7,7 @@ interface FeedbackInputProps {
   setIsRecomended: React.Dispatch<React.SetStateAction<boolean>>;
   isRecommended: boolean;
   isLoading: boolean;
+  hasPurchased?: boolean;
 }
 
 const FeedbackInput: React.FC<FeedbackInputProps> = ({
@@ -15,6 +16,7 @@ const FeedbackInput: React.FC<FeedbackInputProps> = ({
   setIsRecomended,
   isRecommended,
   isLoading,
+  hasPurchased = false,
 }) => {
   return (
     <div className="mt-8 flex flex-col gap-y-2 rounded-md border border-gray-200 shadow">
@@ -23,9 +25,11 @@ const FeedbackInput: React.FC<FeedbackInputProps> = ({
         onChange={onChangeHandler}
         value={value}
         name="feedback"
-        className="w-full p-4 focus:outline-none"
+        className={`w-full p-4 focus:outline-none ${
+          !hasPurchased ? "cursor-not-allowed" : ""
+        }`}
         placeholder="What's your experience with this product?"
-        disabled={isLoading}
+        disabled={isLoading || !hasPurchased}
         required
       ></textarea>
 
@@ -35,11 +39,13 @@ const FeedbackInput: React.FC<FeedbackInputProps> = ({
             isRecommended={isRecommended}
             setIsRecomended={setIsRecomended}
             option="recommended"
+            hasPurchased={hasPurchased}
           />
           <FeedbackRecommendationOption
             isRecommended={isRecommended}
             setIsRecomended={setIsRecomended}
             option="not-recommended"
+            hasPurchased={hasPurchased}
           />
         </div>
 

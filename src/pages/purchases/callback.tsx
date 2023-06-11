@@ -5,7 +5,12 @@ import { useRouter } from "next/router";
 import { authOptions } from "~/server/auth";
 import { api } from "~/utils/api";
 
-type TransactionStatus = "capture" | "deny" | "pending" | "expire";
+type TransactionStatus =
+  | "capture"
+  | "settlement"
+  | "deny"
+  | "pending"
+  | "expire";
 
 const validate = (
   orderId: string,
@@ -20,7 +25,7 @@ const validate = (
     return false;
   }
 
-  if (transactionStatus !== "capture") {
+  if (transactionStatus !== "capture" && transactionStatus !== "settlement") {
     return false;
   }
 
@@ -51,7 +56,10 @@ const PurchasesCallbackPage: NextPage<PurchasesCallbackPageProps> = ({
       }
     );
 
-  if (transactionConfirm?.status === "capture") {
+  if (
+    transactionConfirm?.status === "capture" ||
+    transactionConfirm?.status === "settlement"
+  ) {
     void router.push(
       "/products/[id]",
       `/products/${transactionConfirm.productId}`
@@ -63,7 +71,10 @@ const PurchasesCallbackPage: NextPage<PurchasesCallbackPageProps> = ({
       <Head>
         <title>| Payment</title>
       </Head>
-      <p>Success payment</p>
+
+      <div className="min-h-sm text-center">
+        <p className="mt-8 text-xl">Success payment</p>
+      </div>
     </>
   );
 };

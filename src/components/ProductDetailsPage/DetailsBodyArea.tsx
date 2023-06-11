@@ -170,7 +170,11 @@ const DetailsBodyArea: React.FC<DetailsBodyAreaProps> = ({
       {section === "feedbacks" && (
         <div id="product-feedbacks">
           {isAuthed && !isOwner && (
-            <FeedbackForm productId={productId} getFeedbacks={getFeedbacks} />
+            <FeedbackForm
+              productId={productId}
+              getFeedbacks={getFeedbacks}
+              hasPurchased={hasDownloadAccess}
+            />
           )}
 
           <hr />
