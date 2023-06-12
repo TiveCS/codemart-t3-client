@@ -217,13 +217,15 @@ const SellPage: NextPage = () => {
 
         void router.push("/products");
       })
-      .catch(() => {
+      .catch((err) => {
         setIsPublishing(false);
 
         addToast({
           message: "Failed to publish product",
           variant: "danger",
         });
+
+        console.log(err);
 
         return Promise.reject();
       });
