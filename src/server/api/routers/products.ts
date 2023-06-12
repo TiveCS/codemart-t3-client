@@ -137,24 +137,24 @@ export const productsRouter = createTRPCRouter({
         demoUrl,
       } = input;
 
-      const [codeUploadResult, coverImgUploadResult, assetsUploadResult] =
+      const [codeUploadResult, coverImgUploadResult, assetsUploadResults] =
         await Promise.all([
           s3.putObject(codeFile, {}),
           s3.putObject(coverImgFile, {}),
-          s3.putMultiFileObject(assets, {}),
+          Promise.all(assets.map((file) => s3.putObject(file, {}))),
         ]);
 
       const [codeUrl, coverImgUrl, assetsUrl] = await Promise.all([
         s3.presignedUrl(codeUploadResult.key, 60 * 60 * 24 * 7),
         s3.presignedUrl(coverImgUploadResult.key, 60 * 60 * 24 * 7),
-        Promise.all<string>(
-          assetsUploadResult.map((result) =>
+        Promise.all(
+          assetsUploadResults.map((result) =>
             s3.presignedUrl(result.key, 60 * 60 * 24 * 7)
           )
         ),
       ]);
 
-      const product = await prisma.product.create({
+      await prisma.product.create({
         data: {
           title,
           description,
@@ -173,21 +173,15 @@ export const productsRouter = createTRPCRouter({
               id: session.user.id,
             },
           },
+          contents: {
+            create: {
+              version,
+              code_url: codeUrl,
+            },
+          },
         },
         select: {
           id: true,
-        },
-      });
-
-      await prisma.productContent.create({
-        data: {
-          version,
-          code_url: codeUrl,
-          product: {
-            connect: {
-              id: product.id,
-            },
-          },
         },
       });
     }),
